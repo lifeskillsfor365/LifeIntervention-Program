@@ -688,6 +688,7 @@
     <a href="#" onclick="showPage(event,'survey')" class="nav-link" data-target="survey">Survey</a>
     <a href="#" onclick="showPage(event,'links')" class="nav-link" data-target="links">🔗 Links</a>
     <a href="#" onclick="showPage(event,'contact')" class="nav-link" data-target="contact">Contact</a>
+    <a href="#" onclick="openStaffLogin(event)" style="display:inline-flex;align-items:center;gap:6px;background:#1b3a6b;color:#fff;padding:6px 14px;border-radius:20px;font-size:.78rem;font-weight:800;letter-spacing:.5px;text-decoration:none;border:none;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">🔐 Staff Only</a>
   </div>
 </nav>
 
@@ -708,7 +709,6 @@
     </div>
   </div>
   <div class="hero-body container">
-    <div class="hero-badge">☀️ Launched Summer 2026</div>
     <h1><span class="accent-sun">Life</span><br>Intervention<br><span class="accent-leaf">Program</span></h1>
     <p class="hero-sub">Turn Everyday Life into the Most Natural Learning Environment! Integrating ABA principles and OT-based functional life-skills training, this program embeds intervention into everyday routines—so students can learn, grow, and become more independent.</p>
     <div class="hero-cta">
@@ -739,90 +739,72 @@
 </section>
 
 
-<section id="about">
+<!-- THREE PATHS SHOWCASE -->
+<section style="background:linear-gradient(180deg,#fff,#fffaf0);padding:80px 0;">
   <div class="container">
-    <div class="about-grid">
-      <div>
-        <div class="section-label">About the Program</div>
-        <h2 class="section-title">Learning That Happens in Real Life</h2>
-        <p class="section-intro">Parents and children participate together so students can learn, grow, and become more independent in real-life settings, build life skills, and move toward a better future.</p>
-        <div class="pill-list">
-          <span class="pill">ABA Principles</span>
-          <span class="pill">OT-Based Training</span>
-          <span class="pill">Family-Centered</span>
-          <span class="pill">Pilot Program</span>
-          <span class="pill">Everyday Routines</span>
-        </div>
-      </div>
-      <div class="about-visual">
-        <div class="about-stat">
-          <span class="icon">👨‍👩‍👧</span>
-          <div><strong>Family-Based</strong><span>Parents are essential partners</span></div>
-        </div>
-        <div class="about-stat">
-          <span class="icon">🏡</span>
-          <div><strong>Real-World Settings</strong><span>Home, community & beyond</span></div>
-        </div>
-        <div class="about-stat">
-          <span class="icon">📈</span>
-          <div><strong>Weekly Feedback</strong><span>Continuously improved</span></div>
-        </div>
-        <div class="about-stat">
-          <span class="icon">🤝</span>
-          <div><strong>Volunteers Welcome</strong><span>Expand community impact</span></div>
-        </div>
-      </div>
+    <div style="text-align:center;margin-bottom:48px;">
+      <div class="section-label">Our Program Paths</div>
+      <h2 class="section-title">✨ Three Paths to Life Intervention</h2>
+      <p style="font-size:1rem;color:#555;line-height:1.8;max-width:760px;margin:18px auto 0;">Life Intervention is <strong style="color:var(--navy);">one methodology delivered through three implementation paths</strong> — each serving different populations and settings, all working together to support youth and adults with intellectual disabilities across their lifetime.</p>
     </div>
-  </div>
-</section>
 
-<!-- HIGHLIGHTS -->
-<section id="highlights">
-  <div class="container">
-    <div class="section-label">Program Highlights</div>
-    <h2 class="section-title">What Makes This Program Special</h2>
-    <div class="highlights-grid">
-      <div class="hl-card c1">
-        <span class="hl-icon">🏠</span>
-        <h3>Family-Based</h3>
-        <p>Parents are essential partners who take part in task design, practice, and feedback while supporting the needs of both the child and the whole family.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:1100px;margin:0 auto;">
+
+      <!-- Path 1: Adult Day Program -->
+      <div onclick="event.preventDefault();showPage(event,'activities');setTimeout(()=>navigateToPath('daycare'),150);" style="background:#fff;border-radius:24px;padding:32px 28px;box-shadow:0 6px 24px rgba(0,0,0,.08);border-top:6px solid #c62828;cursor:pointer;transition:transform .3s,box-shadow .3s;position:relative;overflow:hidden;" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,.12)'" onmouseout="this.style.transform='';this.style.boxShadow='0 6px 24px rgba(0,0,0,.08)'">
+        <div style="position:absolute;top:14px;right:14px;background:#e8f5e9;color:#2e7d32;padding:4px 12px;border-radius:20px;font-size:.7rem;font-weight:800;letter-spacing:.5px;">✅ ACTIVE</div>
+        <div style="font-size:3rem;line-height:1;margin-bottom:12px;">🏠</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#c62828;font-size:.78rem;letter-spacing:1.5px;margin-bottom:6px;">PATH 1</div>
+        <h3 style="font-family:'Baloo 2',sans-serif;font-weight:800;color:var(--navy);font-size:1.35rem;margin:0 0 14px;line-height:1.25;">Adult Day Program</h3>
+        <p style="font-size:.92rem;color:#555;line-height:1.7;margin:0 0 18px;">Daily structured activities for adults with intellectual disabilities — building life skills, community connection, and meaningful routine.</p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px;font-size:.82rem;color:#666;">
+          <div>👥 <strong>Who:</strong> Adults with intellectual disabilities</div>
+          <div>📍 <strong>Where:</strong> True Love · Suwanee, GA</div>
+          <div>📅 <strong>When:</strong> Daily, ongoing</div>
+        </div>
+        <div style="color:#c62828;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.88rem;">Learn More →</div>
       </div>
-      <div class="hl-card c2">
-        <span class="hl-icon">🌟</span>
-        <h3>Respect Autonomy, Empower Growth</h3>
-        <p>Encourage youth to make choices, express needs, and share feelings while developing self-advocacy, self-management, and problem-solving skills.</p>
+
+      <!-- Path 2: Weekly Youth Activities -->
+      <div onclick="event.preventDefault();showPage(event,'activities');setTimeout(()=>navigateToPath('youth'),150);" style="background:#fff;border-radius:24px;padding:32px 28px;box-shadow:0 6px 24px rgba(0,0,0,.08);border-top:6px solid #1565c0;cursor:pointer;transition:transform .3s,box-shadow .3s;position:relative;overflow:hidden;" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,.12)'" onmouseout="this.style.transform='';this.style.boxShadow='0 6px 24px rgba(0,0,0,.08)'">
+        <div style="position:absolute;top:14px;right:14px;background:#e8f5e9;color:#2e7d32;padding:4px 12px;border-radius:20px;font-size:.7rem;font-weight:800;letter-spacing:.5px;">✅ ACTIVE</div>
+        <div style="font-size:3rem;line-height:1;margin-bottom:12px;">🎨</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#1565c0;font-size:.78rem;letter-spacing:1.5px;margin-bottom:6px;">PATH 2</div>
+        <h3 style="font-family:'Baloo 2',sans-serif;font-weight:800;color:var(--navy);font-size:1.35rem;margin:0 0 14px;line-height:1.25;">Weekly Youth Activities</h3>
+        <p style="font-size:.92rem;color:#555;line-height:1.7;margin:0 0 18px;">Weekly group activities for youth ages 8–22 — building life skills, peer connection, and confidence through online + in-person sessions.</p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px;font-size:.82rem;color:#666;">
+          <div>👥 <strong>Who:</strong> Youth ages 8–22</div>
+          <div>📍 <strong>Where:</strong> Online + in-person mix</div>
+          <div>📅 <strong>When:</strong> Weekly, ongoing</div>
+        </div>
+        <div style="color:#1565c0;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.88rem;">Learn More →</div>
       </div>
-      <div class="hl-card c3">
-        <span class="hl-icon">✅</span>
-        <h3>Project-Based Learning Rooted in Daily Life</h3>
-        <p>Students learn life skills through authentic tasks, apply them in practice, and grow through everyday experiences.</p>
+
+      <!-- Path 3: Family-Centered Summer -->
+      <div onclick="event.preventDefault();showPage(event,'activities');setTimeout(()=>navigateToPath('family'),150);" style="background:#fff;border-radius:24px;padding:32px 28px;box-shadow:0 6px 24px rgba(0,0,0,.08);border-top:6px solid #2e7d32;cursor:pointer;transition:transform .3s,box-shadow .3s;position:relative;overflow:hidden;" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,.12)'" onmouseout="this.style.transform='';this.style.boxShadow='0 6px 24px rgba(0,0,0,.08)'">
+        <div style="position:absolute;top:14px;right:14px;background:#fff3e0;color:#e65100;padding:4px 12px;border-radius:20px;font-size:.7rem;font-weight:800;letter-spacing:.5px;">🔜 LAUNCHING 2026</div>
+        <div style="font-size:3rem;line-height:1;margin-bottom:12px;">🏡</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#2e7d32;font-size:.78rem;letter-spacing:1.5px;margin-bottom:6px;">PATH 3</div>
+        <h3 style="font-family:'Baloo 2',sans-serif;font-weight:800;color:var(--navy);font-size:1.35rem;margin:0 0 14px;line-height:1.25;">Family-Centered + Volunteer</h3>
+        <p style="font-size:.92rem;color:#555;line-height:1.7;margin:0 0 18px;">Year-round bridge program with a summer intensive launch — combining family routines, trained volunteers, and evidence-based practice. <em>(True Love × UTK partnership)</em></p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px;font-size:.82rem;color:#666;">
+          <div>👥 <strong>Who:</strong> Youth 8–22 + families</div>
+          <div>📍 <strong>Where:</strong> Online + in-person</div>
+          <div>📅 <strong>When:</strong> Year-round + Summer 2026 launch</div>
+        </div>
+        <div style="color:#2e7d32;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.88rem;">Learn More →</div>
       </div>
-      <div class="hl-card c4">
-        <span class="hl-icon">💬</span>
-        <h3>Weekly Feedback, Ongoing Improvement</h3>
-        <p>This pilot program is continuously adjusted and improved to be more practical, flexible, and sustainable through weekly feedback.</p>
-      </div>
-      <div class="hl-card c5">
-        <span class="hl-icon">🤝</span>
-        <h3>Community Participation, Volunteers Welcome</h3>
-        <p>We welcome volunteers to join the program, expand community impact, and benefit more families.</p>
-      </div>
+
     </div>
+
+    <!-- Bridge message -->
+    <div style="text-align:center;margin-top:42px;padding:24px;background:#fff8e1;border-radius:18px;max-width:760px;margin-left:auto;margin-right:auto;border-left:4px solid #e65100;">
+      <p style="margin:0;font-size:.94rem;color:#444;line-height:1.7;"><strong style="color:#e65100;">🌉 One Vision, Multiple Pathways:</strong> Whether through daily adult care, weekly youth activities, or family-centered summer programs, we build skills that grow with the person — across <strong>settings</strong>, across a <strong>lifetime</strong>.</p>
+    </div>
+
   </div>
 </section>
 
-
-<!-- PHILOSOPHY ON HOME PAGE -->
-<section style="background:var(--navy);padding:72px 0;">
-  <div class="container" style="text-align:center;max-width:760px;">
-    <div class="section-label" style="color:var(--sun);">Our Philosophy</div>
-    <h2 class="section-title" style="color:#fff;">Learning That Lasts a Lifetime</h2>
-    <p style="color:rgba(255,255,255,.85);font-size:1.05rem;line-height:1.8;margin-bottom:36px;">We hope students will not only learn skills in a classroom, but also bring those skills back to their homes, communities, and real life. We also hope parents will not passively wait for intervention outcomes, but instead become the most important partners in their children's growth.</p>
-    <div class="phil-quote">"Let every family routine become an opportunity for a child to grow!"</div>
-  </div>
-</section>
-
-</section>
 
 </div><!-- /page-home -->
 
@@ -1291,20 +1273,23 @@
   <div class="container">
     <div class="section-label">Program Activities</div>
     <h2 class="section-title">What We Do Together</h2>
-    <p class="section-intro">Every activity is embedded in real-life routines, designed to build independence through practice, family involvement, and meaningful daily tasks.</p>
 
-    <!-- Life Skills Continuum Banner -->
-    <div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border-radius:20px;padding:24px 28px;margin-bottom:32px;border-left:4px solid #e65100;">
-      <h3 style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#e65100;font-size:1.1rem;margin:0 0 10px;">🌉 Same Skills, Two Settings — A Life Skills Continuum</h3>
-      <p style="font-size:.9rem;color:#555;line-height:1.7;margin:0;">The activities we design for Life Intervention naturally extend into True Love's Adult Day Program. The same skills practiced at home with family can be reinforced in the community — creating <strong style="color:#e65100;">continuity throughout a person's life</strong>.</p>
+    <!-- Dynamic path banner — shown when a specific path is filtered -->
+    <div id="actPathBanner" style="display:none;border-radius:16px;padding:16px 24px;margin-bottom:24px;align-items:center;gap:14px;">
+      <span id="actPathEmoji" style="font-size:2rem;"></span>
+      <div>
+        <div id="actPathLabel" style="font-size:.72rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:.7;"></div>
+        <div id="actPathName" style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.3rem;"></div>
+      </div>
     </div>
+
+    <p class="section-intro">Every activity is embedded in real-life routines, designed to build independence through practice, family involvement, and meaningful daily tasks.</p>
 
     <div class="act-tabs">
       <button class="act-tab active" onclick="filterActs('all',this)">All Activities</button>
-      <button class="act-tab" onclick="filterActs('online',this)">Online Camp</button>
-      <button class="act-tab" onclick="filterActs('inperson',this)">In-Person Camp</button>
-      <button class="act-tab" onclick="filterActs('both',this)">Both Phases</button>
-      <button class="act-tab" onclick="filterActs('daycare',this)" style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);color:#e65100;border:2px solid #ffcc80;">🏠 Adult Day Program</button>
+      <button class="act-tab" onclick="filterActs('daycare',this)" style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);color:#e65100;border:2px solid #ffcc80;">🏠 Adult Care Program</button>
+      <button class="act-tab" onclick="filterActs('youth',this)" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);color:#1565c0;border:2px solid #90caf9;">🎯 Weekly Youth Activities</button>
+      <button class="act-tab" onclick="filterActs('family',this)" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);color:#2e7d32;border:2px solid #a5d6a7;">👨‍👩‍👧 Family-Centered Activity</button>
     </div>
 
     <div class="act-grid" id="actGrid">
@@ -1353,7 +1338,7 @@
         <div class="act-card-header ch1">
           <span class="act-emoji">🛒</span>
           <h3>Family Food Budget Project</h3>
-          <span class="act-phase-tag">Both Phases</span>
+          <span class="act-phase-tag">Family-Centered Activity</span>
         </div>
         <div class="act-card-body">
           <p class="act-desc">Plan a family meal, create a grocery list, compare prices, and stay within budget. Practice ordering at a restaurant and asking for help.</p>
@@ -1376,7 +1361,7 @@
         </div>
         <div class="act-card-footer">
           <span class="act-duration">⏱ Ongoing</span>
-          <span class="act-type-badge type-both">Both Phases</span>
+          <span class="act-type-badge type-both">Family-Centered</span>
         </div>
       </div>
 
@@ -1384,7 +1369,7 @@
         <div class="act-card-header ch2">
           <span class="act-emoji">📋</span>
           <h3>Weekly Task Planning</h3>
-          <span class="act-phase-tag">Online Camp</span>
+          <span class="act-phase-tag">Weekly Youth Activities</span>
         </div>
         <div class="act-card-body">
           <p class="act-desc">Families plan and assign weekly life-skill tasks together. Students practice following schedules, checking off completed tasks, and self-reporting progress.</p>
@@ -1406,7 +1391,7 @@
         </div>
         <div class="act-card-footer">
           <span class="act-duration">⏱ Weekly</span>
-          <span class="act-type-badge type-online">Online</span>
+          <span class="act-type-badge type-online">Youth Activities</span>
         </div>
       </div>
 
@@ -1414,7 +1399,7 @@
         <div class="act-card-header ch3">
           <span class="act-emoji">🧺</span>
           <h3>Self-Care & Home Management</h3>
-          <span class="act-phase-tag">In-Person Camp</span>
+          <span class="act-phase-tag">Family-Centered Activity</span>
         </div>
         <div class="act-card-body">
           <p class="act-desc">Students practice daily self-care routines, laundry, tidying up, and household chores with step-by-step guidance and family support.</p>
@@ -1444,7 +1429,7 @@
         <div class="act-card-header ch4">
           <span class="act-emoji">🗣️</span>
           <h3>Ordering & Expressing Choices</h3>
-          <span class="act-phase-tag">Both Phases</span>
+          <span class="act-phase-tag">Family-Centered Activity</span>
         </div>
         <div class="act-card-body">
           <p class="act-desc">Role-play real-world scenarios like ordering at a café, asking for directions, or making phone calls. Build confidence in expressing needs and making choices.</p>
@@ -1466,15 +1451,15 @@
         </div>
         <div class="act-card-footer">
           <span class="act-duration">⏱ Weekly</span>
-          <span class="act-type-badge type-both">Both Phases</span>
+          <span class="act-type-badge type-both">Family-Centered</span>
         </div>
       </div>
 
-      <div class="act-card" data-phase="inperson" onclick="document.getElementById('physicalFitnessModal').style.display='flex';document.body.style.overflow='hidden';" style="cursor:pointer;">
+      <div class="act-card" data-phase="all-paths" onclick="document.getElementById('physicalFitnessModal').style.display='flex';document.body.style.overflow='hidden';" style="cursor:pointer;">
         <div class="act-card-header ch5">
           <span class="act-emoji">🏃</span>
           <h3>Physical Fitness</h3>
-          <span class="act-phase-tag">In-Person Camp + Adult Day Program</span>
+          <span class="act-phase-tag">Adult Care · Weekly Youth · Family-Centered</span>
         </div>
         <div class="act-card-body">
           <p class="act-desc">Group warm-ups, walks, exercise routines, and community sports to build healthy habits, body awareness, stamina, and social connection through movement.</p>
@@ -1489,7 +1474,7 @@
         </div>
         <div class="act-card-footer">
           <span class="act-duration">⏱ Daily + Weekly Community Outings</span>
-          <span class="act-type-badge type-inperson">In-Person + Adult Day</span>
+          <span class="act-type-badge type-both">All 3 Paths</span>
         </div>
       </div>
 
@@ -1540,7 +1525,29 @@
     <h2 class="section-title">Program Materials</h2>
     <p class="section-intro">All materials are organized by audience. Find what you need below — everything is available in our shared Google Drive folder.</p>
 
-    <div style="display:flex;flex-direction:column;gap:32px;margin-top:48px;padding-bottom:48px;">
+    <!-- 3-Path Cards -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:28px 0 36px;">
+      <div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border-radius:18px;padding:20px;border:2px solid rgba(230,81,0,.18);box-shadow:0 4px 16px rgba(230,81,0,.08);">
+        <div style="font-size:1.6rem;margin-bottom:8px;">🏠</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#e65100;font-size:1rem;margin-bottom:6px;">Adult Care Program</div>
+        <div style="font-size:.8rem;color:#666;line-height:1.6;">Daily life skills & community activities for adults with intellectual disabilities.</div>
+        <span style="display:inline-block;margin-top:10px;background:#e65100;color:#fff;font-size:.68rem;font-weight:800;letter-spacing:1px;padding:3px 10px;border-radius:20px;">True Love Adult Day</span>
+      </div>
+      <div style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-radius:18px;padding:20px;border:2px solid rgba(21,101,192,.15);box-shadow:0 4px 16px rgba(21,101,192,.08);">
+        <div style="font-size:1.6rem;margin-bottom:8px;">🎯</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#1565c0;font-size:1rem;margin-bottom:6px;">Weekly Youth Activities</div>
+        <div style="font-size:.8rem;color:#666;line-height:1.6;">Weekly sessions for youth ages 8–22 building skills, peer connection, and confidence.</div>
+        <span style="display:inline-block;margin-top:10px;background:#1565c0;color:#fff;font-size:.68rem;font-weight:800;letter-spacing:1px;padding:3px 10px;border-radius:20px;">Online + In-Person</span>
+      </div>
+      <div style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:18px;padding:20px;border:2px solid rgba(46,125,50,.15);box-shadow:0 4px 16px rgba(46,125,50,.08);">
+        <div style="font-size:1.6rem;margin-bottom:8px;">👨‍👩‍👧</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#2e7d32;font-size:1rem;margin-bottom:6px;">Family-Centered Activity</div>
+        <div style="font-size:.8rem;color:#666;line-height:1.6;">Year-round family skill-building connecting students, parents, and siblings together.</div>
+        <span style="display:inline-block;margin-top:10px;background:#2e7d32;color:#fff;font-size:.68rem;font-weight:800;letter-spacing:1px;padding:3px 10px;border-radius:20px;">Year-Round Program</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:32px;margin-top:8px;padding-bottom:48px;">
 
       <!-- SECTION 1: FAMILY RESOURCES -->
       <div style="background:#fff;border-radius:24px;padding:36px;box-shadow:0 4px 20px rgba(0,0,0,.07);border-top:4px solid var(--sky);">
@@ -2064,15 +2071,17 @@ Her areas of focus include holistic intervention planning, skill generalization 
       Volunteers serve as caring helpers and peer buddies for paired families. Guided by the program lead team, they help students and families set meaningful goals that fit naturally into daily routines, break goals into small practice steps, use simple prompts, and share progress after each meeting. Volunteers are not RBTs or clinical providers; they are supportive helpers who encourage real-life skill practice with family participation.
     </div>
 
-    <!-- 2026 VOLUNTEERS -->
+    <!-- CURRENT & PAST VOLUNTEERS -->
     <div style="display:flex;align-items:center;gap:14px;margin:36px 0 20px;">
-      <div style="background:var(--leaf);color:#fff;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;padding:6px 20px;border-radius:30px;">🌱 2026</div>
+      <div style="background:var(--leaf);color:#fff;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;padding:6px 20px;border-radius:30px;">🤝 Current &amp; Past Volunteers</div>
       <div style="flex:1;height:2px;background:linear-gradient(90deg,var(--leaf),transparent);"></div>
+    </div>
+    <div class="team-intro" style="background:#f5f5f5;color:#666;margin-bottom:20px;">
+      We are deeply grateful to every volunteer — past and present — who has given their time and heart to this program.
     </div>
     <div class="team-grid">
 
       <div class="team-card volunteer">
-        <span class="role-badge">2026 Volunteer</span>
         <div class="name">Celina Chen</div>
         <div class="title">Family Support Volunteer</div>
         <div class="affil">❤️ Rising Senior, Lambert High School · Alpharetta, GA</div>
@@ -2084,7 +2093,6 @@ Her areas of focus include holistic intervention planning, skill generalization 
       </div>
 
       <div class="team-card volunteer">
-        <span class="role-badge">2026 Volunteer</span>
         <div class="name">Jocelyn Zeng</div>
         <div class="title">Family Support Volunteer</div>
         <div class="affil">❤️ Stanford University · Human-Centered AI</div>
@@ -2096,7 +2104,6 @@ Her areas of focus include holistic intervention planning, skill generalization 
       </div>
 
       <div class="team-card volunteer">
-        <span class="role-badge">2026 Volunteer</span>
         <div class="name">Cecilia Shen</div>
         <div class="title">Family Support Volunteer</div>
         <div class="affil">❤️ Rising Junior, Emory University · Major: Neuroscience and Behavioral Biology</div>
@@ -2108,28 +2115,26 @@ Her areas of focus include holistic intervention planning, skill generalization 
       </div>
 
       <div class="team-card volunteer">
-        <span class="role-badge">2026 Volunteer</span>
         <div class="name">[ Name ]</div>
         <div class="title">Family Support Volunteer</div>
         <div class="affil">❤️ University of Tennessee, Knoxville</div>
         <div class="bio">Replace this with a short bio — what motivated this volunteer to join, their background, and how they support families in the program.</div>
       </div>
 
-      <!-- Add more 2026 volunteer cards here -->
-      <div class="team-add-hint">
-        <span>➕</span>
-        <div>Add more 2026 volunteers by copying a card block above and updating the details.</div>
+      <!-- Past volunteer cards — badge says Past Volunteer with year -->
+      <div class="team-card" style="border-color:#b0bec5;opacity:.85;">
+        <span class="role-badge" style="background:#eceff1;color:#546e7a;">Past Volunteer</span>
+        <div class="name">[ Name ]</div>
+        <div class="title">Family Support Volunteer</div>
+        <div class="affil">❤️ [ Affiliation · Year ]</div>
+        <div class="bio">Add a short note about this volunteer's contribution and what they brought to the program.</div>
       </div>
 
-    </div>
+      <div class="team-add-hint">
+        <span>➕</span>
+        <div>Add volunteers by copying a card above. Use "2026 Volunteer" badge for current, "Past Volunteer" for alumni.</div>
+      </div>
 
-    <!-- 2027 VOLUNTEERS (placeholder for future) -->
-    <div style="display:flex;align-items:center;gap:14px;margin:36px 0 20px;">
-      <div style="background:#b0bec5;color:#fff;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;padding:6px 20px;border-radius:30px;">🌟 2027</div>
-      <div style="flex:1;height:2px;background:linear-gradient(90deg,#b0bec5,transparent);"></div>
-    </div>
-    <div style="background:#f5f5f5;border-radius:16px;padding:32px;text-align:center;color:#999;font-size:.95rem;margin-bottom:16px;">
-      2027 volunteer profiles will be added here when the program opens for the next year. 🌱
     </div>
   </div>
 </section>
@@ -2574,6 +2579,7 @@ Her areas of focus include holistic intervention planning, skill generalization 
     </div>
   </div>
 </section>
+
 </div><!-- /page-contact -->
 
 <footer>
@@ -2712,21 +2718,76 @@ Her areas of focus include holistic intervention planning, skill generalization 
     if (page) page.classList.add('active');
     const link = document.querySelector('.nav-link[data-target="' + id + '"]');
     if (link) link.classList.add('active');
+    // Hide the activities path banner when leaving activities
+    if (id !== 'activities') {
+      const banner = document.getElementById('actPathBanner');
+      if (banner) banner.style.display = 'none';
+    }
   }
 
   // Activity filter
   function filterActs(phase, btn) {
     document.querySelectorAll('.act-tab').forEach(t => t.classList.remove('active'));
-    btn.classList.add('active');
+    if (btn) btn.classList.add('active');
+
+    // Show/hide activity cards
     document.querySelectorAll('.act-card').forEach(card => {
       const p = card.dataset.phase;
-      card.style.display = (phase === 'all' || p === phase || p === 'both' && phase !== 'online' && phase !== 'inperson') ? '' : 'none';
-      if (phase !== 'all' && p !== phase) card.style.display = 'none';
-      if (phase === 'all') card.style.display = '';
+      if (phase === 'all' || p === 'all-paths') {
+        card.style.display = '';
+      } else if (phase === 'daycare') {
+        card.style.display = (p === 'daycare') ? '' : 'none';
+      } else if (phase === 'youth') {
+        card.style.display = (p === 'online' || p === 'youth') ? '' : 'none';
+      } else if (phase === 'family') {
+        card.style.display = (p === 'inperson' || p === 'both' || p === 'family') ? '' : 'none';
+      } else {
+        card.style.display = (p === phase) ? '' : 'none';
+      }
     });
+
+    // Update path banner
+    const banner = document.getElementById('actPathBanner');
+    const pathMeta = {
+      daycare: { emoji: '🏠', label: 'Path 1', name: 'Adult Care Program', bg: 'linear-gradient(135deg,#fff3e0,#ffe0b2)', color: '#e65100' },
+      youth:   { emoji: '🎯', label: 'Path 2', name: 'Weekly Youth Activities', bg: 'linear-gradient(135deg,#e3f2fd,#bbdefb)', color: '#1565c0' },
+      family:  { emoji: '👨‍👩‍👧', label: 'Path 3', name: 'Family-Centered Activity', bg: 'linear-gradient(135deg,#e8f5e9,#c8e6c9)', color: '#2e7d32' },
+    };
+    if (phase === 'all' || !pathMeta[phase]) {
+      banner.style.display = 'none';
+    } else {
+      const m = pathMeta[phase];
+      banner.style.display = 'flex';
+      banner.style.background = m.bg;
+      banner.style.borderLeft = '5px solid ' + m.color;
+      document.getElementById('actPathEmoji').textContent = m.emoji;
+      document.getElementById('actPathLabel').style.color = m.color;
+      document.getElementById('actPathLabel').textContent = m.label + ' — Showing activities for:';
+      document.getElementById('actPathName').style.color = m.color;
+      document.getElementById('actPathName').textContent = m.name;
+    }
   }
 
-  // Resource type filter
+  function navigateToPath(phase) {
+    // Filter the activity cards
+    document.querySelectorAll('.act-card').forEach(card => {
+      const p = card.dataset.phase;
+      if (p === 'all-paths') { card.style.display = ''; return; }
+      if (phase === 'daycare') card.style.display = (p === 'daycare') ? '' : 'none';
+      else if (phase === 'youth') card.style.display = (p === 'online' || p === 'youth') ? '' : 'none';
+      else if (phase === 'family') card.style.display = (p === 'inperson' || p === 'both' || p === 'family') ? '' : 'none';
+    });
+
+    // Set active tab
+    const tabMap = { daycare: 1, youth: 2, family: 3 };
+    document.querySelectorAll('.act-tab').forEach(t => t.classList.remove('active'));
+    const tab = document.querySelectorAll('.act-tab')[tabMap[phase]];
+    if (tab) tab.classList.add('active');
+
+    // Hide the banner
+    const banner = document.getElementById('actPathBanner');
+    if (banner) banner.style.display = 'none';
+  }
   let activeType = 'all';
   function filterResType(type, btn) {
     activeType = type;
@@ -2788,6 +2849,183 @@ Her areas of focus include holistic intervention planning, skill generalization 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && document.getElementById('pdfReaderModal').classList.contains('open')) closePdfReader();
   });
+</script>
+
+<script>
+// ══════════════════════════════════════════════
+// STAFF PIN & DASHBOARD
+// ══════════════════════════════════════════════
+const STAFF_PIN = '2026';
+let pinEntry = '';
+let dashData = JSON.parse(localStorage.getItem('dashData') || '[]');
+
+function openStaffLogin(e) {
+  e && e.preventDefault();
+  pinEntry = '';
+  updatePinDisplay();
+  document.getElementById('pinError').textContent = '';
+  document.getElementById('staffPinModal').style.display = 'flex';
+}
+function closePinModal() {
+  pinEntry = '';
+  updatePinDisplay();
+  document.getElementById('staffPinModal').style.display = 'none';
+}
+function pinKey(k) {
+  if (k === 'del') { pinEntry = pinEntry.slice(0,-1); }
+  else if (pinEntry.length < 4) { pinEntry += k; }
+  updatePinDisplay();
+  if (pinEntry.length === 4) {
+    setTimeout(() => {
+      if (pinEntry === STAFF_PIN) {
+        document.getElementById('staffPinModal').style.display = 'none';
+        pinEntry = ''; updatePinDisplay();
+        switchPage('dashboard');
+        renderDashboard('all');
+      } else {
+        document.getElementById('pinError').textContent = 'Incorrect PIN. Please try again.';
+        [0,1,2,3].forEach(i => {
+          const el = document.getElementById('pin'+i);
+          el.style.borderColor = '#e53935'; el.style.background = '#fff5f5';
+        });
+        setTimeout(() => {
+          pinEntry = ''; updatePinDisplay();
+          [0,1,2,3].forEach(i => { document.getElementById('pin'+i).style.background = ''; });
+          document.getElementById('pinError').textContent = '';
+        }, 1200);
+      }
+    }, 150);
+  }
+}
+function updatePinDisplay() {
+  [0,1,2,3].forEach(i => {
+    const el = document.getElementById('pin'+i);
+    el.textContent = i < pinEntry.length ? '●' : '';
+    el.style.borderColor = i < pinEntry.length ? '#1b3a6b' : '#ddd';
+    el.style.background = '';
+  });
+}
+function staffLogout(e) { e && e.preventDefault(); showHome(e); }
+
+// ── DASHBOARD ──
+function dashTab(path, btn) {
+  document.querySelectorAll('.dash-tab').forEach((t,i) => {
+    t.style.background = i===0 ? '' : '';
+    t.style.color = '';
+  });
+  const activeBg  = {all:'#1b3a6b', daycare:'#e65100', youth:'#1565c0', family:'#2e7d32'};
+  const activeClr = {all:'#fff',    daycare:'#fff',     youth:'#fff',    family:'#fff'};
+  btn.style.background = activeBg[path];
+  btn.style.color = activeClr[path];
+  renderDashboard(path);
+}
+
+function renderDashboard(path) {
+  const data   = path==='all' ? dashData : dashData.filter(d=>d.path===path);
+  const total  = data.length;
+  const att    = data.filter(d=>d.attended==='yes').length;
+  const rate   = total>0 ? Math.round(att/total*100) : 0;
+  const goals  = data.filter(d=>d.goal==='achieved').length;
+  const parts  = [...new Set(data.map(d=>d.participant).filter(Boolean))].length;
+
+  document.getElementById('dashMetrics').innerHTML = [
+    {label:'Total Entries',   value:total,    sub:'sessions logged'},
+    {label:'Participants',    value:parts,    sub:'unique names'},
+    {label:'Attendance Rate', value:rate+'%', sub:'sessions attended'},
+    {label:'Goals Achieved',  value:goals,    sub:'of '+total+' entries'},
+  ].map(m=>`<div style="background:#fff;border-radius:16px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.06);">
+    <div style="font-size:.75rem;color:#888;margin-bottom:6px;font-weight:600;">${m.label}</div>
+    <div style="font-size:1.8rem;font-weight:800;color:#1b3a6b;">${m.value}</div>
+    <div style="font-size:.72rem;color:#aaa;margin-top:2px;">${m.sub}</div>
+  </div>`).join('');
+
+  const paths = [
+    {key:'daycare',color:'#e65100',label:'Adult Care'},
+    {key:'youth',  color:'#1565c0',label:'Weekly Youth'},
+    {key:'family', color:'#2e7d32',label:'Family-Centered'},
+  ];
+  document.getElementById('attendanceBars').innerHTML = paths.map(p=>{
+    const pd = dashData.filter(d=>d.path===p.key);
+    const r  = pd.length>0 ? Math.round(pd.filter(d=>d.attended==='yes').length/pd.length*100) : 0;
+    return `<div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:5px;">
+        <span style="color:#555;font-weight:600;">${p.label}</span><span style="color:#888;">${r}%</span>
+      </div>
+      <div style="background:#f0f0f0;border-radius:6px;height:10px;overflow:hidden;">
+        <div style="width:${r}%;background:${p.color};height:100%;border-radius:6px;"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const emoji = {daycare:'🏠',youth:'🎯',family:'👨‍👩‍👧'};
+  const clr   = {daycare:'#e65100',youth:'#1565c0',family:'#2e7d32'};
+  const recent = [...dashData].reverse().slice(0,6);
+  document.getElementById('recentLog').innerHTML = recent.length===0
+    ? '<div style="color:#bbb;font-size:.85rem;padding:12px 0;">No entries yet — click "+ Log Entry" to start.</div>'
+    : recent.map(d=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid #f5f5f5;">
+        <div style="width:8px;height:8px;border-radius:50%;background:${clr[d.path]||'#ccc'};margin-top:5px;flex-shrink:0;"></div>
+        <div style="flex:1;">
+          <div style="font-size:.82rem;color:#333;font-weight:600;">${emoji[d.path]||''} ${d.activity||'Session'} — ${d.participant||'Unknown'}</div>
+          <div style="font-size:.72rem;color:#aaa;margin-top:1px;">${d.date||''} · ${d.staff||''}</div>
+        </div>
+        <div style="font-size:.7rem;padding:2px 8px;border-radius:10px;white-space:nowrap;font-weight:700;
+          background:${d.goal==='achieved'?'#e8f5e9':d.goal==='inprogress'?'#e3f2fd':'#fff3e0'};
+          color:${d.goal==='achieved'?'#2e7d32':d.goal==='inprogress'?'#1565c0':'#e65100'};">
+          ${d.goal==='achieved'?'✓ Achieved':d.goal==='inprogress'?'In Progress':'Needs Support'}
+        </div>
+      </div>`).join('');
+
+  document.getElementById('pathBreakdown').innerHTML = paths.map(p=>{
+    const pd = dashData.filter(d=>d.path===p.key);
+    const r  = pd.length>0 ? Math.round(pd.filter(d=>d.attended==='yes').length/pd.length*100) : 0;
+    const g  = pd.filter(d=>d.goal==='achieved').length;
+    const pp = [...new Set(pd.map(d=>d.participant).filter(Boolean))].length;
+    return `<div style="background:#fff;border-radius:18px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.06);border-left:4px solid ${p.color};">
+      <div style="font-size:.85rem;font-weight:800;color:${p.color};margin-bottom:14px;">${emoji[p.key]} ${p.label}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center;">
+        <div><div style="font-size:1.5rem;font-weight:800;color:#1b3a6b;">${pp}</div><div style="font-size:.7rem;color:#aaa;margin-top:2px;">Participants</div></div>
+        <div><div style="font-size:1.5rem;font-weight:800;color:#1b3a6b;">${r}%</div><div style="font-size:.7rem;color:#aaa;margin-top:2px;">Attendance</div></div>
+        <div><div style="font-size:1.5rem;font-weight:800;color:#1b3a6b;">${g}</div><div style="font-size:.7rem;color:#aaa;margin-top:2px;">Goals Met</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── LOG ENTRY ──
+function openLogEntry() {
+  document.getElementById('le-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('logEntryModal').style.display = 'flex';
+}
+function closeLogEntry() {
+  document.getElementById('logEntryModal').style.display = 'none';
+}
+function saveLogEntry() {
+  dashData.push({
+    path:        document.getElementById('le-path').value,
+    date:        document.getElementById('le-date').value,
+    staff:       document.getElementById('le-staff').value,
+    participant: document.getElementById('le-participant').value,
+    activity:    document.getElementById('le-activity').value,
+    attended:    document.getElementById('le-attended').value,
+    goal:        document.getElementById('le-goal').value,
+    notes:       document.getElementById('le-notes').value,
+    timestamp:   Date.now()
+  });
+  localStorage.setItem('dashData', JSON.stringify(dashData));
+  closeLogEntry();
+  renderDashboard('all');
+  document.querySelectorAll('.dash-tab').forEach((t,i) => {
+    if (i===0) { t.style.background='#1b3a6b'; t.style.color='#fff'; }
+    else { t.style.background=''; t.style.color=''; }
+  });
+  ['le-staff','le-participant','le-activity','le-notes'].forEach(id => document.getElementById(id).value='');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('logEntryModal');
+  if (modal) modal.addEventListener('click', e => {
+    if (e.target === modal) closeLogEntry();
+  });
+});
 </script>
 
 
@@ -3004,5 +3242,144 @@ Her areas of focus include holistic intervention planning, skill generalization 
     <p style="text-align:center;color:rgba(255,255,255,.6);font-size:.75rem;margin-top:10px;">Click anywhere outside to close</p>
   </div>
 </div>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- STAFF PIN MODAL -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="staffPinModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:24px;padding:40px 36px;width:340px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+    <div style="font-size:2.5rem;margin-bottom:8px;">🔐</div>
+    <h3 style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#1b3a6b;font-size:1.3rem;margin:0 0 6px;">Staff Access</h3>
+    <p style="font-size:.85rem;color:#888;margin:0 0 24px;">Enter your 4-digit PIN to continue</p>
+    <div style="display:flex;gap:12px;justify-content:center;margin-bottom:24px;">
+      <div id="pin0" style="width:52px;height:60px;border:2px solid #ddd;border-radius:12px;font-size:1.8rem;display:flex;align-items:center;justify-content:center;font-weight:800;color:#1b3a6b;transition:border-color .2s;"></div>
+      <div id="pin1" style="width:52px;height:60px;border:2px solid #ddd;border-radius:12px;font-size:1.8rem;display:flex;align-items:center;justify-content:center;font-weight:800;color:#1b3a6b;transition:border-color .2s;"></div>
+      <div id="pin2" style="width:52px;height:60px;border:2px solid #ddd;border-radius:12px;font-size:1.8rem;display:flex;align-items:center;justify-content:center;font-weight:800;color:#1b3a6b;transition:border-color .2s;"></div>
+      <div id="pin3" style="width:52px;height:60px;border:2px solid #ddd;border-radius:12px;font-size:1.8rem;display:flex;align-items:center;justify-content:center;font-weight:800;color:#1b3a6b;transition:border-color .2s;"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;">
+      <button onclick="pinKey('1')" style="padding:16px;font-size:1.2rem;font-weight:700;border:2px solid #eee;border-radius:12px;background:#fff;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">1</button>
+      <button onclick="pinKey('2')" style="padding:16px;font-size:1.2rem;font-weight:700;border:2px solid #eee;border-radius:12px;background:#fff;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">2</button>
+      <button onclick="pinKey('3')" style="padding:16px;font-size:1.2rem;font-weight:700;border:2px solid #eee;border-radius:12px;background:#fff;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">3</button>
+      <button onclick="pinKey('4')" style="padding:16px;font-size:1.2rem;font-weight:700;border:2px solid #eee;border-radius:12px;background:#fff;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">4</button>
+      <button onclick="pinKey('5')" style="padding:16px;font-size:1.2rem;font-weight:700;border:2px solid #eee;border-radius:12px;background:#fff;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">5</button>
+      <button onclick="pinKey('6')" style="padding:16px;font-size:1.2rem;font-weight:700;border:2px solid #eee;border-radius:12px;background:#fff;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">6</button>
+      <button onclick="pinKey('7')" style="padding:16px;font-size:1.2rem;font-weight:700;border:2px solid #eee;border-radius:12px;background:#fff;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">7</button>
+      <button onclick="pinKey('8')" style="padding:16px;font-size:1.2rem;font-weight:700;border:2px solid #eee;border-radius:12px;background:#fff;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">8</button>
+      <button onclick="pinKey('9')" style="padding:16px;font-size:1.2rem;font-weight:700;border:2px solid #eee;border-radius:12px;background:#fff;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">9</button>
+      <button onclick="pinKey('del')" style="padding:16px;font-size:1rem;font-weight:700;border:2px solid #eee;border-radius:12px;background:#fff;cursor:pointer;color:#e65100;" onmouseover="this.style.background='#fff3e0'" onmouseout="this.style.background='#fff'">⌫</button>
+      <button onclick="pinKey('0')" style="padding:16px;font-size:1.2rem;font-weight:700;border:2px solid #eee;border-radius:12px;background:#fff;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">0</button>
+      <button onclick="closePinModal()" style="padding:16px;font-size:.85rem;font-weight:700;border:2px solid #eee;border-radius:12px;background:#fff;cursor:pointer;color:#aaa;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">✕</button>
+    </div>
+    <div id="pinError" style="color:#e53935;font-size:.82rem;min-height:20px;font-weight:600;"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- STAFF DASHBOARD PAGE -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="page-dashboard" class="site-page">
+<div class="back-bar">
+  <a href="#" onclick="showHome(event)">🏠 Home</a><span class="sep"> › </span><span>Staff Dashboard</span>
+  <a href="#" onclick="staffLogout(event)" style="margin-left:auto;font-size:.8rem;color:#e53935;font-weight:700;text-decoration:none;">🔒 Log out</a>
+</div>
+<section style="background:var(--soft);min-height:100vh;">
+<div class="container" style="padding-top:32px;padding-bottom:48px;">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:28px;">
+    <div>
+      <div style="font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;margin-bottom:4px;">Staff Only</div>
+      <h2 style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#1b3a6b;font-size:1.6rem;margin:0;">Program Tracker</h2>
+    </div>
+    <button onclick="openLogEntry()" style="display:flex;align-items:center;gap:8px;background:#1b3a6b;color:#fff;border:none;padding:12px 22px;border-radius:30px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;box-shadow:0 4px 14px rgba(27,58,107,.3);">
+      ＋ Log Entry
+    </button>
+  </div>
+
+  <!-- Path tabs -->
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;">
+    <button onclick="dashTab('all',this)" class="dash-tab active" style="padding:8px 20px;border-radius:20px;border:2px solid #1b3a6b;background:#1b3a6b;color:#fff;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">All Paths</button>
+    <button onclick="dashTab('daycare',this)" class="dash-tab" style="padding:8px 20px;border-radius:20px;border:2px solid #e65100;background:#fff3e0;color:#e65100;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">🏠 Adult Care</button>
+    <button onclick="dashTab('youth',this)" class="dash-tab" style="padding:8px 20px;border-radius:20px;border:2px solid #1565c0;background:#e3f2fd;color:#1565c0;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">🎯 Weekly Youth</button>
+    <button onclick="dashTab('family',this)" class="dash-tab" style="padding:8px 20px;border-radius:20px;border:2px solid #2e7d32;background:#e8f5e9;color:#2e7d32;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">👨‍👩‍👧 Family-Centered</button>
+  </div>
+
+  <!-- Overview metrics -->
+  <div id="dashMetrics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px;"></div>
+
+  <!-- Charts row -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+    <div style="background:#fff;border-radius:18px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.06);">
+      <div style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:14px;">Attendance by Path</div>
+      <div id="attendanceBars"></div>
+    </div>
+    <div style="background:#fff;border-radius:18px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.06);">
+      <div style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:14px;">Recent Activity Log</div>
+      <div id="recentLog" style="display:flex;flex-direction:column;gap:0;"></div>
+    </div>
+  </div>
+
+  <!-- Per-path breakdown -->
+  <div id="pathBreakdown" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;"></div>
+
+</div>
+</section>
+</div><!-- /page-dashboard -->
+
+<!-- LOG ENTRY MODAL -->
+<div id="logEntryModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;align-items:center;justify-content:center;overflow-y:auto;padding:20px;">
+  <div style="background:#fff;border-radius:24px;padding:36px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <h3 style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#1b3a6b;font-size:1.2rem;margin:0;">Log a Session Entry</h3>
+      <button onclick="closeLogEntry()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#aaa;">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Path</label>
+        <select id="le-path" style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;">
+          <option value="daycare">🏠 Adult Care Program</option>
+          <option value="youth">🎯 Weekly Youth Activities</option>
+          <option value="family">👨‍👩‍👧 Family-Centered Activity</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Date</label>
+        <input type="date" id="le-date" style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Staff / Volunteer Name</label>
+        <input type="text" id="le-staff" placeholder="e.g. Sarah K." style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Participant Name</label>
+        <input type="text" id="le-participant" placeholder="e.g. John D." style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Activity</label>
+        <input type="text" id="le-activity" placeholder="e.g. Money Skills, Gardening…" style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Attended?</label>
+        <select id="le-attended" style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Goal Status</label>
+        <select id="le-goal" style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;">
+          <option value="achieved">Achieved</option>
+          <option value="inprogress">In Progress</option>
+          <option value="needs-support">Needs Support</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Notes</label>
+        <textarea id="le-notes" rows="3" placeholder="Optional notes…" style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;resize:vertical;"></textarea>
+      </div>
+      <button onclick="saveLogEntry()" style="background:#1b3a6b;color:#fff;border:none;padding:14px;border-radius:12px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;cursor:pointer;margin-top:4px;">Save Entry</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
