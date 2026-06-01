@@ -2712,13 +2712,17 @@ Her areas of focus include holistic intervention planning, skill generalization 
     window.scrollTo(0,0);
   }
   function switchPage(id) {
+    // Guard dashboard — redirect to PIN modal if not authenticated
+    if (id === 'dashboard' && !sessionStorage.getItem('staffAuth')) {
+      openStaffLogin();
+      return;
+    }
     document.querySelectorAll('.site-page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-link').forEach(a => a.classList.remove('active'));
     const page = document.getElementById('page-' + id);
     if (page) page.classList.add('active');
     const link = document.querySelector('.nav-link[data-target="' + id + '"]');
     if (link) link.classList.add('active');
-    // Hide the activities path banner when leaving activities
     if (id !== 'activities') {
       const banner = document.getElementById('actPathBanner');
       if (banner) banner.style.display = 'none';
@@ -2879,6 +2883,7 @@ function pinKey(k) {
     setTimeout(() => {
       if (pinEntry === STAFF_PIN) {
         document.getElementById('staffPinModal').style.display = 'none';
+        sessionStorage.setItem('staffAuth', '1');
         pinEntry = ''; updatePinDisplay();
         switchPage('dashboard');
         renderDashboard('all');
@@ -2905,7 +2910,7 @@ function updatePinDisplay() {
     el.style.background = '';
   });
 }
-function staffLogout(e) { e && e.preventDefault(); showHome(e); }
+function staffLogout(e) { e && e.preventDefault(); sessionStorage.removeItem('staffAuth'); showHome(e); }
 
 // ── DASHBOARD ──
 function dashTab(path, btn) {
@@ -2991,41 +2996,411 @@ function renderDashboard(path) {
   }).join('');
 }
 
-// ── LOG ENTRY ──
-function openLogEntry() {
-  document.getElementById('le-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('logEntryModal').style.display = 'flex';
-}
-function closeLogEntry() {
-  document.getElementById('logEntryModal').style.display = 'none';
-}
-function saveLogEntry() {
-  dashData.push({
-    path:        document.getElementById('le-path').value,
-    date:        document.getElementById('le-date').value,
-    staff:       document.getElementById('le-staff').value,
-    participant: document.getElementById('le-participant').value,
-    activity:    document.getElementById('le-activity').value,
-    attended:    document.getElementById('le-attended').value,
-    goal:        document.getElementById('le-goal').value,
-    notes:       document.getElementById('le-notes').value,
-    timestamp:   Date.now()
-  });
-  localStorage.setItem('dashData', JSON.stringify(dashData));
-  closeLogEntry();
-  renderDashboard('all');
-  document.querySelectorAll('.dash-tab').forEach((t,i) => {
-    if (i===0) { t.style.background='#1b3a6b'; t.style.color='#fff'; }
-    else { t.style.background=''; t.style.color=''; }
-  });
-  ['le-staff','le-participant','le-activity','le-notes'].forEach(id => document.getElementById(id).value='');
-}
+// ── LOG ENTRY (removed) ──
 document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('logEntryModal');
   if (modal) modal.addEventListener('click', e => {
     if (e.target === modal) closeLogEntry();
   });
+  buildDailyLogTable();
+  buildYouthLogTable();
+  renderSavedLogs();
+  renderSavedYouthLogs();
+  document.getElementById('dl-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('yl-date').value = new Date().toISOString().split('T')[0];
 });
+
+// ── DASHBOARD VIEW TABS ──
+function switchDashView(view, btn) {
+  ['overview','dailylog','youthlog','statistics'].forEach(v => {
+    const el = document.getElementById('dashView-' + v);
+    if (el) el.style.display = v === view ? '' : 'none';
+  });
+  ['overview','dailylog','youthlog','statistics'].forEach(v => {
+    const t = document.getElementById('viewTab-' + v);
+    if (t) {
+      t.style.color = v === view ? '#1b3a6b' : '#aaa';
+      t.style.borderBottom = v === view ? '3px solid #1b3a6b' : '3px solid transparent';
+    }
+  });
+  if (view === 'statistics') renderStatistics();
+}
+
+// ── STATISTICS ──
+function renderStatistics() {
+  const adultLogs = JSON.parse(localStorage.getItem('dailyLogs') || '[]');
+  const youthLogs = JSON.parse(localStorage.getItem('youthLogs') || '[]');
+  const adultActs = ['Money Skill','Community Shopping','Physical Fitness','Gardening','Basic Living Skill','Video-game'];
+  const youthActs = ['Public Speaking','Physical Fitness','Art','Peer Tutor','Other Program'];
+
+  // ── Adult Care metrics ──
+  let adultParticipants = new Set(), adultSessions = 0, adultTotal = 0;
+  const adultActCounts = {};
+  adultActs.forEach(a => adultActCounts[a] = 0);
+
+  adultLogs.forEach(log => {
+    adultSessions++;
+    log.rows.forEach(row => {
+      adultParticipants.add(row.name);
+      adultTotal++;
+      row.marked.forEach(m => { if (adultActCounts[m] !== undefined) adultActCounts[m]++; });
+    });
+  });
+
+  document.getElementById('stat-adult-metrics').innerHTML = [
+    { label:'Sessions Logged', value: adultSessions },
+    { label:'Total Entries',   value: adultTotal },
+    { label:'Participants',    value: adultParticipants.size },
+  ].map(m => `<div style="background:#fff3e0;border-radius:14px;padding:14px;text-align:center;">
+    <div style="font-size:.72rem;color:#e65100;font-weight:700;margin-bottom:4px;">${m.label}</div>
+    <div style="font-size:1.8rem;font-weight:800;color:#1b3a6b;">${m.value}</div>
+  </div>`).join('');
+
+  const adultMax = Math.max(...Object.values(adultActCounts), 1);
+  document.getElementById('stat-adult-bars').innerHTML = adultActs.map(a => `
+    <div style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:4px;">
+        <span style="color:#555;font-weight:600;">${a}</span>
+        <span style="color:#e65100;font-weight:700;">${adultActCounts[a]}</span>
+      </div>
+      <div style="background:#f0f0f0;border-radius:6px;height:10px;overflow:hidden;">
+        <div style="width:${Math.round(adultActCounts[a]/adultMax*100)}%;background:#e65100;height:100%;border-radius:6px;transition:width .6s;"></div>
+      </div>
+    </div>`).join('');
+
+  // ── Weekly Youth metrics ──
+  let youthVolunteers = 0, youthStudents = 0, youthSessions2 = 0;
+  const youthActCounts = {};
+  youthActs.forEach(a => youthActCounts[a] = 0);
+
+  youthLogs.forEach(log => {
+    youthSessions2++;
+    youthVolunteers += log.volunteers || 0;
+    youthStudents   += log.students   || 0;
+    log.rows.forEach(row => {
+      row.markedActs.forEach(a => { if (youthActCounts[a] !== undefined) youthActCounts[a]++; });
+    });
+  });
+
+  document.getElementById('stat-youth-metrics').innerHTML = [
+    { label:'Sessions Logged',     value: youthSessions2 },
+    { label:'Total Volunteers',    value: youthVolunteers },
+    { label:'Total Students',      value: youthStudents },
+  ].map(m => `<div style="background:#e3f2fd;border-radius:14px;padding:14px;text-align:center;">
+    <div style="font-size:.72rem;color:#1565c0;font-weight:700;margin-bottom:4px;">${m.label}</div>
+    <div style="font-size:1.8rem;font-weight:800;color:#1b3a6b;">${m.value}</div>
+  </div>`).join('');
+
+  const youthMax = Math.max(...Object.values(youthActCounts), 1);
+  document.getElementById('stat-youth-bars').innerHTML = youthActs.map(a => `
+    <div style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:4px;">
+        <span style="color:#555;font-weight:600;">${a}</span>
+        <span style="color:#1565c0;font-weight:700;">${youthActCounts[a]}</span>
+      </div>
+      <div style="background:#f0f0f0;border-radius:6px;height:10px;overflow:hidden;">
+        <div style="width:${Math.round(youthActCounts[a]/youthMax*100)}%;background:#1565c0;height:100%;border-radius:6px;transition:width .6s;"></div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('stat-youth-roster').innerHTML = youthLogs.length === 0
+    ? '<div style="color:#bbb;font-size:.82rem;">No sessions logged yet.</div>'
+    : youthLogs.slice(0,8).map(log => `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f5f5f5;font-size:.82rem;">
+        <span style="color:#888;width:80px;">${log.date}</span>
+        <span style="background:#e3f2fd;color:#1565c0;padding:2px 8px;border-radius:10px;font-weight:700;font-size:.72rem;">🤝 ${log.volunteers} volunteer${log.volunteers!==1?'s':''}</span>
+        <span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:10px;font-weight:700;font-size:.72rem;">🎓 ${log.students} student${log.students!==1?'s':''}</span>
+        <span style="color:#aaa;margin-left:auto;">${log.staff||''}</span>
+      </div>`).join('');
+}
+
+// ── EXPORT CSV ──
+function exportCSV() {
+  const adultLogs = JSON.parse(localStorage.getItem('dailyLogs') || '[]');
+  const youthLogs = JSON.parse(localStorage.getItem('youthLogs') || '[]');
+  const adultActs = ['Money Skill','Community Shopping','Physical Fitness','Gardening','Basic Living Skill','Video-game'];
+  const youthActs = ['Public Speaking','Physical Fitness','Art','Peer Tutor','Other Program'];
+
+  let csv = 'PATH,DATE,STAFF,NAME,ACTIVITIES,ATTENDED,NOTES\n';
+
+  adultLogs.forEach(log => {
+    log.rows.forEach(row => {
+      const acts = row.marked.filter(m => adultActs.includes(m)).join(' | ');
+      csv += `Adult Care,${log.date},"${log.staff||''}","${row.name}","${acts}",${row.marked.includes('Attended')?'Yes':''},\n`;
+    });
+  });
+
+  youthLogs.forEach(log => {
+    log.rows.forEach(row => {
+      const acts = row.markedActs.join(' | ');
+      csv += `Weekly Youth,${log.date},"${log.staff||''}","${row.name}","${acts}",${row.attended?'Yes':'No'},"${row.role||''}"\n`;
+    });
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `program-log-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── WEEKLY YOUTH LOG ──
+const YL_ROWS = 11;
+const YL_COLS = 5; // activities only
+
+function buildYouthLogTable() {
+  const tbody = document.getElementById('ylBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  for (let r = 0; r < YL_ROWS; r++) {
+    const tr = document.createElement('tr');
+
+    // Name cell
+    const tdName = document.createElement('td');
+    tdName.style.cssText = 'border:1px solid #ddd;padding:0;';
+    const nameInp = document.createElement('input');
+    nameInp.type = 'text';
+    nameInp.placeholder = 'Name';
+    nameInp.style.cssText = 'width:100%;border:none;padding:6px 8px;font-size:.8rem;outline:none;background:transparent;';
+    tdName.appendChild(nameInp);
+    tr.appendChild(tdName);
+
+    // Role cell (Volunteer / Student dropdown)
+    const tdRole = document.createElement('td');
+    tdRole.style.cssText = 'border:1px solid #ddd;padding:0;';
+    const roleSelect = document.createElement('select');
+    roleSelect.style.cssText = 'width:100%;border:none;padding:5px 4px;font-size:.75rem;outline:none;background:transparent;cursor:pointer;';
+    ['','Volunteer','Student'].forEach(opt => {
+      const o = document.createElement('option');
+      o.value = opt; o.textContent = opt || '—';
+      roleSelect.appendChild(o);
+    });
+    tdRole.appendChild(roleSelect);
+    tr.appendChild(tdRole);
+
+    // Activity X cells
+    for (let c = 0; c < YL_COLS; c++) {
+      const td = document.createElement('td');
+      td.style.cssText = 'border:1px solid #ddd;text-align:center;cursor:pointer;height:32px;font-weight:700;font-size:.85rem;color:#1565c0;transition:background .1s;';
+      td.addEventListener('click', function() {
+        this.textContent = this.textContent === 'X' ? '' : 'X';
+        this.style.background = this.textContent === 'X' ? '#e3f2fd' : '';
+      });
+      td.addEventListener('mouseover', function() { if (this.textContent !== 'X') this.style.background = '#f5f5f5'; });
+      td.addEventListener('mouseout', function() { if (this.textContent !== 'X') this.style.background = ''; });
+      tr.appendChild(td);
+    }
+
+    // Attended cell
+    const tdAtt = document.createElement('td');
+    tdAtt.style.cssText = 'border:1px solid #ddd;text-align:center;cursor:pointer;height:32px;font-weight:700;font-size:.85rem;color:#1565c0;transition:background .1s;';
+    tdAtt.addEventListener('click', function() {
+      this.textContent = this.textContent === 'X' ? '' : 'X';
+      this.style.background = this.textContent === 'X' ? '#e3f2fd' : '';
+    });
+    tdAtt.addEventListener('mouseover', function() { if (this.textContent !== 'X') this.style.background = '#f5f5f5'; });
+    tdAtt.addEventListener('mouseout', function() { if (this.textContent !== 'X') this.style.background = ''; });
+    tr.appendChild(tdAtt);
+
+    // Notes cell
+    const tdNotes = document.createElement('td');
+    tdNotes.style.cssText = 'border:1px solid #ddd;padding:0;';
+    const notesInp = document.createElement('input');
+    notesInp.type = 'text';
+    notesInp.placeholder = 'Notes…';
+    notesInp.style.cssText = 'width:100%;border:none;padding:6px 8px;font-size:.75rem;outline:none;background:transparent;color:#6a1b9a;';
+    tdNotes.appendChild(notesInp);
+    tr.appendChild(tdNotes);
+
+    tbody.appendChild(tr);
+  }
+}
+
+function clearYouthLog() {
+  const tbody = document.getElementById('ylBody');
+  if (!tbody) return;
+  tbody.querySelectorAll('td[style*="cursor:pointer"]').forEach(td => { td.textContent = ''; td.style.background = ''; });
+  tbody.querySelectorAll('input').forEach(inp => inp.value = '');
+  tbody.querySelectorAll('select').forEach(sel => sel.value = '');
+}
+
+function saveYouthLog() {
+  const date  = document.getElementById('yl-date').value;
+  const staff = document.getElementById('yl-staff').value;
+  if (!date) { alert('Please enter a date before saving.'); return; }
+
+  const activities = ['Public Speaking','Physical Fitness','Art','Peer Tutor','Other Program'];
+  const rows = [];
+  let volunteers = 0, students = 0;
+
+  document.getElementById('ylBody').querySelectorAll('tr').forEach(tr => {
+    const name = tr.querySelector('input')?.value?.trim();
+    const role = tr.querySelector('select')?.value;
+    if (!name) return;
+    const cells = [...tr.querySelectorAll('td[style*="cursor:pointer"]')];
+    const markedActs = activities.filter((_,i) => cells[i]?.textContent === 'X');
+    const attended = cells[5]?.textContent === 'X';
+    rows.push({ name, role, markedActs, attended });
+    if (attended && role === 'Volunteer') volunteers++;
+    if (attended && role === 'Student') students++;
+
+    dashData.push({
+      path: 'youth', date, staff,
+      participant: name,
+      activity: markedActs.join(', '),
+      attended: attended ? 'yes' : 'no',
+      goal: 'inprogress',
+      timestamp: Date.now()
+    });
+  });
+
+  if (rows.length === 0) { alert('No data to save — please enter names and mark some cells.'); return; }
+
+  const savedLogs = JSON.parse(localStorage.getItem('youthLogs') || '[]');
+  savedLogs.unshift({ date, staff, rows, volunteers, students, savedAt: Date.now() });
+  localStorage.setItem('youthLogs', JSON.stringify(savedLogs));
+  localStorage.setItem('dashData', JSON.stringify(dashData));
+
+  renderSavedYouthLogs();
+  alert(`✅ Log saved! ${volunteers} volunteer(s), ${students} student(s) attended.`);
+}
+
+function renderSavedYouthLogs() {
+  const container = document.getElementById('savedYouthLogs');
+  if (!container) return;
+  const logs = JSON.parse(localStorage.getItem('youthLogs') || '[]');
+  if (logs.length === 0) {
+    container.innerHTML = '<div style="color:#bbb;font-size:.82rem;">No logs saved yet.</div>';
+    return;
+  }
+  container.innerHTML = logs.slice(0, 5).map(log => `
+    <div style="background:#f8f9fc;border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <div>
+        <div style="font-size:.82rem;font-weight:700;color:#1565c0;">${log.date} — ${log.staff || 'No staff name'}</div>
+        <div style="font-size:.75rem;color:#888;margin-top:2px;">
+          🤝 ${log.volunteers} volunteer(s) · 🎓 ${log.students} student(s)
+        </div>
+      </div>
+      <div style="font-size:.72rem;color:#bbb;">${new Date(log.savedAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
+    </div>`).join('');
+}
+
+// ── DAILY LOG TABLE ──
+const DL_ROWS = 11;
+const DL_COLS = 12;
+
+function buildDailyLogTable() {
+  const tbody = document.getElementById('dlBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  for (let r = 0; r < DL_ROWS; r++) {
+    const tr = document.createElement('tr');
+    // Name cell
+    const td0 = document.createElement('td');
+    td0.style.cssText = 'border:1px solid #ddd;padding:0;';
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = 'Name';
+    inp.style.cssText = 'width:100%;border:none;padding:6px 8px;font-size:.8rem;outline:none;background:transparent;';
+    td0.appendChild(inp);
+    tr.appendChild(td0);
+    // X cells
+    for (let c = 0; c < DL_COLS; c++) {
+      const td = document.createElement('td');
+      td.style.cssText = 'border:1px solid #ddd;text-align:center;cursor:pointer;height:32px;font-weight:700;font-size:.85rem;color:#1565c0;transition:background .1s;';
+      td.addEventListener('click', function() {
+        this.textContent = this.textContent === 'X' ? '' : 'X';
+        this.style.background = this.textContent === 'X' ? '#e3f2fd' : '';
+      });
+      td.addEventListener('mouseover', function() { if (this.textContent !== 'X') this.style.background = '#f5f5f5'; });
+      td.addEventListener('mouseout', function() { if (this.textContent !== 'X') this.style.background = ''; });
+      tr.appendChild(td);
+    }
+    // Notes cell
+    const tdNotes = document.createElement('td');
+    tdNotes.style.cssText = 'border:1px solid #ddd;padding:0;';
+    const notesInp = document.createElement('input');
+    notesInp.type = 'text';
+    notesInp.placeholder = 'Notes…';
+    notesInp.style.cssText = 'width:100%;border:none;padding:6px 8px;font-size:.75rem;outline:none;background:transparent;color:#6a1b9a;';
+    tdNotes.appendChild(notesInp);
+    tr.appendChild(tdNotes);
+    tbody.appendChild(tr);
+  }
+}
+
+function clearDailyLog() {
+  const tbody = document.getElementById('dlBody');
+  if (!tbody) return;
+  tbody.querySelectorAll('td[style*="cursor:pointer"]').forEach(td => {
+    td.textContent = '';
+    td.style.background = '';
+  });
+  tbody.querySelectorAll('input').forEach(inp => inp.value = '');
+}
+function saveDailyLog() {
+  const date  = document.getElementById('dl-date').value;
+  const staff = document.getElementById('dl-staff').value;
+  if (!date) { alert('Please enter a date before saving.'); return; }
+
+  const activities = ['Money Skill','Community Shopping','Physical Fitness','Gardening','Basic Living Skill','Video-game'];
+  const levels     = ['Independent','Needs Prompts'];
+  const prompts    = ['Gesture','Verbal','Visual','Physical'];
+  const headers    = [...activities, ...levels, ...prompts];
+
+  const rows = [];
+  document.getElementById('dlBody').querySelectorAll('tr').forEach(tr => {
+    const name = tr.querySelector('input')?.value?.trim();
+    if (!name) return;
+    const cells = [...tr.querySelectorAll('td[style*="cursor:pointer"]')];
+    const marked = cells.map((td,i) => td.textContent === 'X' ? headers[i] : null).filter(Boolean);
+    if (marked.length === 0) return;
+    rows.push({ name, marked });
+
+    // Also push into dashData for metrics
+    const markedActs = activities.filter((_,i) => cells[i]?.textContent === 'X');
+    dashData.push({
+      path: 'daycare', date, staff,
+      participant: name,
+      activity: markedActs.join(', '),
+      attended: markedActs.length > 0 ? 'yes' : 'no',
+      goal: 'inprogress',
+      timestamp: Date.now()
+    });
+  });
+
+  if (rows.length === 0) { alert('No data to save — please enter names and mark some cells.'); return; }
+
+  // Save daily logs
+  const savedLogs = JSON.parse(localStorage.getItem('dailyLogs') || '[]');
+  savedLogs.unshift({ date, staff, rows, savedAt: Date.now() });
+  localStorage.setItem('dailyLogs', JSON.stringify(savedLogs));
+  localStorage.setItem('dashData', JSON.stringify(dashData));
+
+  renderSavedLogs();
+  alert('✅ Log saved successfully!');
+}
+
+function renderSavedLogs() {
+  const container = document.getElementById('savedLogs');
+  if (!container) return;
+  const logs = JSON.parse(localStorage.getItem('dailyLogs') || '[]');
+  if (logs.length === 0) {
+    container.innerHTML = '<div style="color:#bbb;font-size:.82rem;">No logs saved yet.</div>';
+    return;
+  }
+  container.innerHTML = logs.slice(0, 5).map(log => `
+    <div style="background:#f8f9fc;border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <div>
+        <div style="font-size:.82rem;font-weight:700;color:#1b3a6b;">${log.date} — ${log.staff || 'No staff name'}</div>
+        <div style="font-size:.75rem;color:#888;margin-top:2px;">${log.rows.length} participant${log.rows.length>1?'s':''} logged</div>
+      </div>
+      <div style="font-size:.72rem;color:#bbb;">${new Date(log.savedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>
+    </div>
+  `).join('');
+}
 </script>
 
 
@@ -3271,6 +3646,10 @@ document.addEventListener('DOMContentLoaded', () => {
       <button onclick="closePinModal()" style="padding:16px;font-size:.85rem;font-weight:700;border:2px solid #eee;border-radius:12px;background:#fff;cursor:pointer;color:#aaa;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">✕</button>
     </div>
     <div id="pinError" style="color:#e53935;font-size:.82rem;min-height:20px;font-weight:600;"></div>
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid #f0f0f0;">
+      <p style="font-size:.78rem;color:#bbb;margin:0 0 10px;">This area is for program staff only.</p>
+      <a href="#" onclick="closePinModal();showHome(event);" style="font-size:.8rem;color:#1b3a6b;font-weight:700;text-decoration:none;">← Back to Home Page</a>
+    </div>
   </div>
 </div>
 
@@ -3290,96 +3669,213 @@ document.addEventListener('DOMContentLoaded', () => {
       <div style="font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;margin-bottom:4px;">Staff Only</div>
       <h2 style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#1b3a6b;font-size:1.6rem;margin:0;">Program Tracker</h2>
     </div>
-    <button onclick="openLogEntry()" style="display:flex;align-items:center;gap:8px;background:#1b3a6b;color:#fff;border:none;padding:12px 22px;border-radius:30px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;box-shadow:0 4px 14px rgba(27,58,107,.3);">
-      ＋ Log Entry
-    </button>
   </div>
 
-  <!-- Path tabs -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;">
-    <button onclick="dashTab('all',this)" class="dash-tab active" style="padding:8px 20px;border-radius:20px;border:2px solid #1b3a6b;background:#1b3a6b;color:#fff;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">All Paths</button>
-    <button onclick="dashTab('daycare',this)" class="dash-tab" style="padding:8px 20px;border-radius:20px;border:2px solid #e65100;background:#fff3e0;color:#e65100;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">🏠 Adult Care</button>
-    <button onclick="dashTab('youth',this)" class="dash-tab" style="padding:8px 20px;border-radius:20px;border:2px solid #1565c0;background:#e3f2fd;color:#1565c0;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">🎯 Weekly Youth</button>
-    <button onclick="dashTab('family',this)" class="dash-tab" style="padding:8px 20px;border-radius:20px;border:2px solid #2e7d32;background:#e8f5e9;color:#2e7d32;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">👨‍👩‍👧 Family-Centered</button>
+  <!-- View tabs: Overview / Daily Log -->
+  <div style="display:flex;gap:8px;margin-bottom:24px;border-bottom:2px solid #eee;padding-bottom:0;">
+    <button onclick="switchDashView('overview',this)" id="viewTab-overview" style="padding:10px 24px;border:none;background:none;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;color:#1b3a6b;border-bottom:3px solid #1b3a6b;margin-bottom:-2px;">📊 Overview</button>
+    <button onclick="switchDashView('dailylog',this)" id="viewTab-dailylog" style="padding:10px 24px;border:none;background:none;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;color:#aaa;border-bottom:3px solid transparent;margin-bottom:-2px;">📋 Daily Log — Adult Care</button>
+    <button onclick="switchDashView('youthlog',this)" id="viewTab-youthlog" style="padding:10px 24px;border:none;background:none;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;color:#aaa;border-bottom:3px solid transparent;margin-bottom:-2px;">📋 Daily Log — Weekly Youth</button>
+    <button onclick="switchDashView('statistics',this)" id="viewTab-statistics" style="padding:10px 24px;border:none;background:none;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;color:#aaa;border-bottom:3px solid transparent;margin-bottom:-2px;">📈 Statistics</button>
   </div>
 
-  <!-- Overview metrics -->
-  <div id="dashMetrics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px;"></div>
-
-  <!-- Charts row -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
-    <div style="background:#fff;border-radius:18px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.06);">
-      <div style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:14px;">Attendance by Path</div>
-      <div id="attendanceBars"></div>
+  <!-- OVERVIEW VIEW -->
+  <div id="dashView-overview">
+    <!-- Path tabs -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;">
+      <button onclick="dashTab('all',this)" class="dash-tab active" style="padding:8px 20px;border-radius:20px;border:2px solid #1b3a6b;background:#1b3a6b;color:#fff;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">All Paths</button>
+      <button onclick="dashTab('daycare',this)" class="dash-tab" style="padding:8px 20px;border-radius:20px;border:2px solid #e65100;background:#fff3e0;color:#e65100;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">🏠 Adult Care</button>
+      <button onclick="dashTab('youth',this)" class="dash-tab" style="padding:8px 20px;border-radius:20px;border:2px solid #1565c0;background:#e3f2fd;color:#1565c0;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">🎯 Weekly Youth</button>
+      <button onclick="dashTab('family',this)" class="dash-tab" style="padding:8px 20px;border-radius:20px;border:2px solid #2e7d32;background:#e8f5e9;color:#2e7d32;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">👨‍👩‍👧 Family-Centered</button>
     </div>
-    <div style="background:#fff;border-radius:18px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.06);">
-      <div style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:14px;">Recent Activity Log</div>
-      <div id="recentLog" style="display:flex;flex-direction:column;gap:0;"></div>
+    <div id="dashMetrics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+      <div style="background:#fff;border-radius:18px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.06);">
+        <div style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:14px;">Attendance by Path</div>
+        <div id="attendanceBars"></div>
+      </div>
+      <div style="background:#fff;border-radius:18px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.06);">
+        <div style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:14px;">Recent Activity Log</div>
+        <div id="recentLog"></div>
+      </div>
+    </div>
+    <div id="pathBreakdown" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;"></div>
+  </div>
+
+  <!-- DAILY LOG VIEW -->
+  <div id="dashView-dailylog" style="display:none;">
+    <div style="background:#fff;border-radius:18px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.06);">
+
+      <!-- Header -->
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #fff3e0;">
+        <div style="font-size:1.8rem;">🏠</div>
+        <div>
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#e65100;">Path 1</div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#e65100;font-size:1.1rem;">Adult Care Program — Daily Log</div>
+        </div>
+        <div style="margin-left:auto;background:#fff3e0;border:2px solid #e65100;color:#e65100;font-size:.72rem;font-weight:800;letter-spacing:1px;padding:4px 12px;border-radius:20px;">True Love Adult Day</div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px;align-items:center;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-size:.8rem;font-weight:700;color:#555;">Date</label>
+          <input type="date" id="dl-date" style="padding:7px 12px;border:2px solid #eee;border-radius:10px;font-size:.85rem;outline:none;">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-size:.8rem;font-weight:700;color:#555;">Staff</label>
+          <input type="text" id="dl-staff" placeholder="Staff name" style="padding:7px 12px;border:2px solid #eee;border-radius:10px;font-size:.85rem;outline:none;width:140px;">
+        </div>
+        <button onclick="saveDailyLog()" style="margin-left:auto;background:#1b3a6b;color:#fff;border:none;padding:9px 22px;border-radius:20px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;cursor:pointer;">💾 Save Log</button>
+        <button onclick="clearDailyLog()" style="background:#fff;color:#aaa;border:2px solid #eee;padding:9px 18px;border-radius:20px;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">Clear All</button>
+      </div>
+
+      <!-- Scrollable table -->
+      <div style="overflow-x:auto;">
+        <table id="dailyLogTable" style="border-collapse:collapse;font-size:.78rem;width:100%;min-width:780px;">
+          <colgroup>
+            <col style="width:110px;">
+            <col style="width:56px;"><col style="width:72px;"><col style="width:64px;"><col style="width:58px;"><col style="width:70px;"><col style="width:56px;">
+            <col style="width:62px;"><col style="width:66px;">
+            <col style="width:52px;"><col style="width:50px;"><col style="width:50px;"><col style="width:56px;">
+            <col style="width:90px;">
+          </colgroup>
+          <thead>
+            <tr>
+              <th rowspan="2" style="border:1px solid #ddd;background:#f8f9fc;padding:7px 10px;text-align:left;font-weight:700;color:#1b3a6b;">Name</th>
+              <th colspan="6" style="border:1px solid #ddd;background:#fff3e0;padding:6px;text-align:center;font-weight:700;color:#e65100;">Activity</th>
+              <th colspan="2" style="border:1px solid #ddd;background:#e3f2fd;padding:6px;text-align:center;font-weight:700;color:#1565c0;">Level</th>
+              <th colspan="4" style="border:1px solid #ddd;background:#e8f5e9;padding:6px;text-align:center;font-weight:700;color:#2e7d32;">Prompt Level</th>
+              <th rowspan="2" style="border:1px solid #ddd;background:#f3e5f5;padding:7px 6px;text-align:center;font-weight:700;color:#6a1b9a;">Notes</th>
+            </tr>
+            <tr>
+              <th style="border:1px solid #ddd;background:#fff8f0;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Money Skill</th>
+              <th style="border:1px solid #ddd;background:#fff8f0;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Community Shopping</th>
+              <th style="border:1px solid #ddd;background:#fff8f0;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Physical Fitness</th>
+              <th style="border:1px solid #ddd;background:#fff8f0;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Gardening</th>
+              <th style="border:1px solid #ddd;background:#fff8f0;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Basic Living Skill</th>
+              <th style="border:1px solid #ddd;background:#fff8f0;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Video-game</th>
+              <th style="border:1px solid #ddd;background:#eef6fd;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Independent</th>
+              <th style="border:1px solid #ddd;background:#eef6fd;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Needs Prompts</th>
+              <th style="border:1px solid #ddd;background:#f0f8f0;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Gesture</th>
+              <th style="border:1px solid #ddd;background:#f0f8f0;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Verbal</th>
+              <th style="border:1px solid #ddd;background:#f0f8f0;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Visual</th>
+              <th style="border:1px solid #ddd;background:#f0f8f0;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Physical</th>
+            </tr>
+          </thead>
+          <tbody id="dlBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Saved logs -->
+      <div style="margin-top:24px;">
+        <div style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:12px;">Saved Daily Logs</div>
+        <div id="savedLogs" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+    </div>
+  </div>
+  <!-- WEEKLY YOUTH DAILY LOG VIEW -->
+  <div id="dashView-youthlog" style="display:none;">
+    <div style="background:#fff;border-radius:18px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.06);">
+
+      <!-- Header -->
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #bbdefb;">
+        <div style="font-size:1.8rem;">🎯</div>
+        <div>
+          <div style="font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#1565c0;">Path 2</div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#1565c0;font-size:1.1rem;">Weekly Youth Activities — Daily Log</div>
+        </div>
+        <div style="margin-left:auto;background:#e3f2fd;border:2px solid #1565c0;color:#1565c0;font-size:.72rem;font-weight:800;letter-spacing:1px;padding:4px 12px;border-radius:20px;">Online + In-Person</div>
+      </div>
+
+      <!-- Date + Staff -->
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px;align-items:center;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-size:.8rem;font-weight:700;color:#555;">Date</label>
+          <input type="date" id="yl-date" style="padding:7px 12px;border:2px solid #eee;border-radius:10px;font-size:.85rem;outline:none;">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-size:.8rem;font-weight:700;color:#555;">Staff</label>
+          <input type="text" id="yl-staff" placeholder="Staff name" style="padding:7px 12px;border:2px solid #eee;border-radius:10px;font-size:.85rem;outline:none;width:140px;">
+        </div>
+        <button onclick="saveYouthLog()" style="margin-left:auto;background:#1565c0;color:#fff;border:none;padding:9px 22px;border-radius:20px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;cursor:pointer;">💾 Save Log</button>
+        <button onclick="clearYouthLog()" style="background:#fff;color:#aaa;border:2px solid #eee;padding:9px 18px;border-radius:20px;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;">Clear All</button>
+      </div>
+
+      <!-- Table -->
+      <div style="overflow-x:auto;">
+        <table id="youthLogTable" style="border-collapse:collapse;font-size:.78rem;width:100%;min-width:700px;">
+          <colgroup>
+            <col style="width:100px;"><col style="width:70px;">
+            <col style="width:70px;"><col style="width:70px;"><col style="width:55px;"><col style="width:60px;"><col style="width:70px;"><col style="width:55px;">
+            <col style="width:90px;">
+          </colgroup>
+          <thead>
+            <tr>
+              <th rowspan="2" style="border:1px solid #ddd;background:#f8f9fc;padding:7px 10px;text-align:left;font-weight:700;color:#1b3a6b;">Name</th>
+              <th rowspan="2" style="border:1px solid #ddd;background:#f8f9fc;padding:7px 6px;text-align:center;font-weight:700;color:#1b3a6b;">Role</th>
+              <th colspan="5" style="border:1px solid #ddd;background:#e3f2fd;padding:6px;text-align:center;font-weight:700;color:#1565c0;">Activity</th>
+              <th rowspan="2" style="border:1px solid #ddd;background:#f8f9fc;padding:7px 6px;text-align:center;font-weight:700;color:#1b3a6b;">Attended</th>
+              <th rowspan="2" style="border:1px solid #ddd;background:#f3e5f5;padding:7px 6px;text-align:center;font-weight:700;color:#6a1b9a;">Notes</th>
+            </tr>
+            <tr>
+              <th style="border:1px solid #ddd;background:#eef6fd;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Public Speaking</th>
+              <th style="border:1px solid #ddd;background:#eef6fd;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Physical Fitness</th>
+              <th style="border:1px solid #ddd;background:#eef6fd;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Art</th>
+              <th style="border:1px solid #ddd;background:#eef6fd;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Peer Tutor</th>
+              <th style="border:1px solid #ddd;background:#eef6fd;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Other Program</th>
+            </tr>
+          </thead>
+          <tbody id="ylBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Saved logs -->
+      <div style="margin-top:24px;">
+        <div style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:12px;">Saved Youth Logs</div>
+        <div id="savedYouthLogs" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
     </div>
   </div>
 
-  <!-- Per-path breakdown -->
-  <div id="pathBreakdown" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;"></div>
+  <!-- STATISTICS VIEW -->
+  <div id="dashView-statistics" style="display:none;">
+
+    <!-- Export button -->
+    <div style="display:flex;justify-content:flex-end;margin-bottom:20px;">
+      <button onclick="exportCSV()" style="display:flex;align-items:center;gap:8px;background:#fff;color:#1b3a6b;border:2px solid #1b3a6b;padding:10px 22px;border-radius:20px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;cursor:pointer;">
+        📥 Export CSV
+      </button>
+    </div>
+
+    <!-- Adult Care Stats -->
+    <div style="background:#fff;border-radius:18px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:20px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #fff3e0;">
+        <span style="font-size:1.4rem;">🏠</span>
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#e65100;font-size:1.05rem;">Adult Care Program — Activity Summary</span>
+      </div>
+      <div id="stat-adult-metrics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:20px;"></div>
+      <div style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:12px;">Activity Attendance</div>
+      <div id="stat-adult-bars"></div>
+    </div>
+
+    <!-- Weekly Youth Stats -->
+    <div style="background:#fff;border-radius:18px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:20px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #bbdefb;">
+        <span style="font-size:1.4rem;">🎯</span>
+        <span style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#1565c0;font-size:1.05rem;">Weekly Youth Activities — Summary</span>
+      </div>
+      <div id="stat-youth-metrics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:20px;"></div>
+      <div style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:12px;">Activity Attendance</div>
+      <div id="stat-youth-bars"></div>
+      <div style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin:16px 0 12px;">Volunteers vs Students per Session</div>
+      <div id="stat-youth-roster"></div>
+    </div>
+
+  </div>
 
 </div>
 </section>
 </div><!-- /page-dashboard -->
 
-<!-- LOG ENTRY MODAL -->
-<div id="logEntryModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;align-items:center;justify-content:center;overflow-y:auto;padding:20px;">
-  <div style="background:#fff;border-radius:24px;padding:36px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.25);">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
-      <h3 style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#1b3a6b;font-size:1.2rem;margin:0;">Log a Session Entry</h3>
-      <button onclick="closeLogEntry()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#aaa;">✕</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:14px;">
-      <div>
-        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Path</label>
-        <select id="le-path" style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;">
-          <option value="daycare">🏠 Adult Care Program</option>
-          <option value="youth">🎯 Weekly Youth Activities</option>
-          <option value="family">👨‍👩‍👧 Family-Centered Activity</option>
-        </select>
-      </div>
-      <div>
-        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Date</label>
-        <input type="date" id="le-date" style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;">
-      </div>
-      <div>
-        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Staff / Volunteer Name</label>
-        <input type="text" id="le-staff" placeholder="e.g. Sarah K." style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;">
-      </div>
-      <div>
-        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Participant Name</label>
-        <input type="text" id="le-participant" placeholder="e.g. John D." style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;">
-      </div>
-      <div>
-        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Activity</label>
-        <input type="text" id="le-activity" placeholder="e.g. Money Skills, Gardening…" style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;">
-      </div>
-      <div>
-        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Attended?</label>
-        <select id="le-attended" style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;">
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-        </select>
-      </div>
-      <div>
-        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Goal Status</label>
-        <select id="le-goal" style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;">
-          <option value="achieved">Achieved</option>
-          <option value="inprogress">In Progress</option>
-          <option value="needs-support">Needs Support</option>
-        </select>
-      </div>
-      <div>
-        <label style="font-size:.8rem;font-weight:700;color:#555;display:block;margin-bottom:5px;">Notes</label>
-        <textarea id="le-notes" rows="3" placeholder="Optional notes…" style="width:100%;padding:10px 14px;border:2px solid #eee;border-radius:10px;font-size:.9rem;outline:none;resize:vertical;"></textarea>
-      </div>
-      <button onclick="saveLogEntry()" style="background:#1b3a6b;color:#fff;border:none;padding:14px;border-radius:12px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;cursor:pointer;margin-top:4px;">Save Entry</button>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
