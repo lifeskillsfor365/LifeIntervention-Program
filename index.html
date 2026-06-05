@@ -3022,15 +3022,60 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSavedYouthLogs();
   document.getElementById('dl-date').value = new Date().toISOString().split('T')[0];
   document.getElementById('yl-date').value = new Date().toISOString().split('T')[0];
+
+  // Load saved data or clear when date changes
+  document.getElementById('dl-date').addEventListener('change', () => {
+    const date = document.getElementById('dl-date').value;
+    const logs = JSON.parse(localStorage.getItem('dailyLogs') || '[]');
+    const existing = logs.find(l => l.date === date);
+    const tbody = document.getElementById('dlBody');
+
+    // Always clear first
+    tbody.querySelectorAll('td[data-tick]').forEach(td => {
+      td.textContent = '';
+      td.style.background = '';
+    });
+    tbody.querySelectorAll('tr').forEach((tr, r) => {
+      const inp = tr.querySelector('input');
+      if (inp) inp.value = DL_NAMES[r] || '';
+    });
+
+    // If existing log for this date, reload it
+    if (existing) {
+      const activities = ['Money Skill','Community Shopping','Physical Fitness','Gardening','Basic Living Skill','Video-game'];
+      const levels = ['Independent','Needs Prompts'];
+      const prompts = ['Gesture','Verbal','Visual','Physical'];
+      const headers = [...activities, ...levels, ...prompts, 'Attendance'];
+
+      existing.rows.forEach(row => {
+        // Find the matching tr by name
+        [...tbody.querySelectorAll('tr')].forEach(tr => {
+          const inp = tr.querySelector('input');
+          if (inp && inp.value === row.name) {
+            const cells = [...tr.querySelectorAll('td[data-tick]')];
+            cells.forEach((td, i) => {
+              if (row.marked && row.marked.includes(headers[i])) {
+                td.textContent = 'X';
+                td.style.background = i === 12 ? '#f3e5f5' : '#e3f2fd';
+              }
+            });
+          }
+        });
+      });
+
+      // Show staff name too
+      if (existing.staff) document.getElementById('dl-staff').value = existing.staff;
+    }
+  });
 });
 
 // ── DASHBOARD VIEW TABS ──
 function switchDashView(view, btn) {
-  ['overview','dailylog','youthlog','statistics'].forEach(v => {
+  ['overview','dailylog','youthlog','savedlogs','statistics'].forEach(v => {
     const el = document.getElementById('dashView-' + v);
     if (el) el.style.display = v === view ? '' : 'none';
   });
-  ['overview','dailylog','youthlog','statistics'].forEach(v => {
+  ['overview','dailylog','youthlog','savedlogs','statistics'].forEach(v => {
     const t = document.getElementById('viewTab-' + v);
     if (t) {
       t.style.color = v === view ? '#1b3a6b' : '#aaa';
@@ -3038,6 +3083,7 @@ function switchDashView(view, btn) {
     }
   });
   if (view === 'statistics') renderStatistics();
+  if (view === 'savedlogs') { renderSavedLogs(); renderSavedYouthLogs(); }
 }
 
 // ── STATISTICS ──
@@ -3218,14 +3264,15 @@ function buildYouthLogTable() {
     tdAtt.addEventListener('mouseout', function() { if (this.textContent !== 'X') this.style.background = ''; });
     tr.appendChild(tdAtt);
 
-    // Notes cell
+    // Attendance cell (clickable X)
     const tdNotes = document.createElement('td');
-    tdNotes.style.cssText = 'border:1px solid #ddd;padding:0;';
-    const notesInp = document.createElement('input');
-    notesInp.type = 'text';
-    notesInp.placeholder = 'Notes…';
-    notesInp.style.cssText = 'width:100%;border:none;padding:6px 8px;font-size:.75rem;outline:none;background:transparent;color:#6a1b9a;';
-    tdNotes.appendChild(notesInp);
+    tdNotes.style.cssText = 'border:1px solid #ddd;text-align:center;cursor:pointer;height:32px;font-weight:700;font-size:.85rem;color:#6a1b9a;transition:background .1s;';
+    tdNotes.addEventListener('click', function() {
+      this.textContent = this.textContent === 'X' ? '' : 'X';
+      this.style.background = this.textContent === 'X' ? '#f3e5f5' : '';
+    });
+    tdNotes.addEventListener('mouseover', function() { if (this.textContent !== 'X') this.style.background = '#f5f5f5'; });
+    tdNotes.addEventListener('mouseout', function() { if (this.textContent !== 'X') this.style.background = ''; });
     tr.appendChild(tdNotes);
 
     tbody.appendChild(tr);
@@ -3302,7 +3349,8 @@ function renderSavedYouthLogs() {
 }
 
 // ── DAILY LOG TABLE ──
-const DL_ROWS = 11;
+const DL_ROWS = 16;
+const DL_NAMES = ['Jacob','Lee','Drew','Bryan','Whitney','Daniel','Tariq','Olivia','Sydney','Erica','Dereck','Victoria','Zaraich','David','',''];
 const DL_COLS = 12;
 
 function buildDailyLogTable() {
@@ -3316,13 +3364,14 @@ function buildDailyLogTable() {
     td0.style.cssText = 'border:1px solid #ddd;padding:0;';
     const inp = document.createElement('input');
     inp.type = 'text';
-    inp.placeholder = 'Name';
+    inp.value = DL_NAMES[r] || '';
     inp.style.cssText = 'width:100%;border:none;padding:6px 8px;font-size:.8rem;outline:none;background:transparent;';
     td0.appendChild(inp);
     tr.appendChild(td0);
     // X cells
     for (let c = 0; c < DL_COLS; c++) {
       const td = document.createElement('td');
+      td.dataset.tick = c;
       td.style.cssText = 'border:1px solid #ddd;text-align:center;cursor:pointer;height:32px;font-weight:700;font-size:.85rem;color:#1565c0;transition:background .1s;';
       td.addEventListener('click', function() {
         this.textContent = this.textContent === 'X' ? '' : 'X';
@@ -3332,14 +3381,16 @@ function buildDailyLogTable() {
       td.addEventListener('mouseout', function() { if (this.textContent !== 'X') this.style.background = ''; });
       tr.appendChild(td);
     }
-    // Notes cell
+    // Attendance cell (clickable X)
     const tdNotes = document.createElement('td');
-    tdNotes.style.cssText = 'border:1px solid #ddd;padding:0;';
-    const notesInp = document.createElement('input');
-    notesInp.type = 'text';
-    notesInp.placeholder = 'Notes…';
-    notesInp.style.cssText = 'width:100%;border:none;padding:6px 8px;font-size:.75rem;outline:none;background:transparent;color:#6a1b9a;';
-    tdNotes.appendChild(notesInp);
+    tdNotes.dataset.tick = 12;
+    tdNotes.style.cssText = 'border:1px solid #ddd;text-align:center;cursor:pointer;height:32px;font-weight:700;font-size:.85rem;color:#6a1b9a;transition:background .1s;';
+    tdNotes.addEventListener('click', function() {
+      this.textContent = this.textContent === 'X' ? '' : 'X';
+      this.style.background = this.textContent === 'X' ? '#f3e5f5' : '';
+    });
+    tdNotes.addEventListener('mouseover', function() { if (this.textContent !== 'X') this.style.background = '#f5f5f5'; });
+    tdNotes.addEventListener('mouseout', function() { if (this.textContent !== 'X') this.style.background = ''; });
     tr.appendChild(tdNotes);
     tbody.appendChild(tr);
   }
@@ -3348,11 +3399,15 @@ function buildDailyLogTable() {
 function clearDailyLog() {
   const tbody = document.getElementById('dlBody');
   if (!tbody) return;
-  tbody.querySelectorAll('td[style*="cursor:pointer"]').forEach(td => {
+  tbody.querySelectorAll('td[data-tick]').forEach(td => {
     td.textContent = '';
     td.style.background = '';
   });
-  tbody.querySelectorAll('input').forEach(inp => inp.value = '');
+  // Restore pre-filled names instead of clearing them
+  tbody.querySelectorAll('tr').forEach((tr, r) => {
+    const inp = tr.querySelector('input');
+    if (inp) inp.value = DL_NAMES[r] || '';
+  });
 }
 function saveDailyLog() {
   const date  = document.getElementById('dl-date').value;
@@ -3362,34 +3417,38 @@ function saveDailyLog() {
   const activities = ['Money Skill','Community Shopping','Physical Fitness','Gardening','Basic Living Skill','Video-game'];
   const levels     = ['Independent','Needs Prompts'];
   const prompts    = ['Gesture','Verbal','Visual','Physical'];
-  const headers    = [...activities, ...levels, ...prompts];
+  const headers    = [...activities, ...levels, ...prompts, 'Attendance'];
 
   const rows = [];
   document.getElementById('dlBody').querySelectorAll('tr').forEach(tr => {
     const name = tr.querySelector('input')?.value?.trim();
     if (!name) return;
-    const cells = [...tr.querySelectorAll('td[style*="cursor:pointer"]')];
+    const cells = [...tr.querySelectorAll('td[data-tick]')];
     const marked = cells.map((td,i) => td.textContent === 'X' ? headers[i] : null).filter(Boolean);
-    if (marked.length === 0) return;
-    rows.push({ name, marked });
+    const attended = cells[12]?.textContent === 'X';
+    rows.push({ name, marked, attended });
 
-    // Also push into dashData for metrics
+    // Push into dashData for metrics
     const markedActs = activities.filter((_,i) => cells[i]?.textContent === 'X');
     dashData.push({
       path: 'daycare', date, staff,
       participant: name,
       activity: markedActs.join(', '),
-      attended: markedActs.length > 0 ? 'yes' : 'no',
+      attended: attended ? 'yes' : 'no',
       goal: 'inprogress',
       timestamp: Date.now()
     });
   });
 
-  if (rows.length === 0) { alert('No data to save — please enter names and mark some cells.'); return; }
+  if (rows.length === 0) { alert('No data to save — please add participant names first.'); return; }
 
-  // Save daily logs
   const savedLogs = JSON.parse(localStorage.getItem('dailyLogs') || '[]');
-  savedLogs.unshift({ date, staff, rows, savedAt: Date.now() });
+  const existingIdx = savedLogs.findIndex(l => l.date === date);
+  if (existingIdx !== -1) {
+    savedLogs[existingIdx] = { date, staff, rows, savedAt: Date.now() };
+  } else {
+    savedLogs.unshift({ date, staff, rows, savedAt: Date.now() });
+  }
   localStorage.setItem('dailyLogs', JSON.stringify(savedLogs));
   localStorage.setItem('dashData', JSON.stringify(dashData));
 
@@ -3405,15 +3464,64 @@ function renderSavedLogs() {
     container.innerHTML = '<div style="color:#bbb;font-size:.82rem;">No logs saved yet.</div>';
     return;
   }
-  container.innerHTML = logs.slice(0, 5).map(log => `
-    <div style="background:#f8f9fc;border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
-      <div>
-        <div style="font-size:.82rem;font-weight:700;color:#1b3a6b;">${log.date} — ${log.staff || 'No staff name'}</div>
-        <div style="font-size:.75rem;color:#888;margin-top:2px;">${log.rows.length} participant${log.rows.length>1?'s':''} logged</div>
+  container.innerHTML = logs.slice(0, 10).map((log, i) => {
+    const rows = log.rows || [];
+    return `
+    <div style="border:1px solid #eee;border-radius:12px;overflow:hidden;margin-bottom:4px;">
+      <div onclick="toggleSavedLog('savedlog-${i}', this)" style="background:#f8f9fc;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;">
+        <div>
+          <div style="font-size:.82rem;font-weight:700;color:#1b3a6b;">${log.date} — ${log.staff || 'No staff name'}</div>
+          <div style="font-size:.75rem;color:#888;margin-top:2px;">${rows.length} participant${rows.length!==1?'s':''} logged</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:.72rem;color:#bbb;">${new Date(log.savedAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
+          <span id="savedlog-arrow-${i}" style="color:#aaa;font-size:.8rem;transition:transform .3s;">▶</span>
+        </div>
       </div>
-      <div style="font-size:.72rem;color:#bbb;">${new Date(log.savedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>
-    </div>
-  `).join('');
+      <div id="savedlog-${i}" style="display:none;padding:16px;border-top:1px solid #eee;background:#fff;">
+        <div style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:12px;">Session Details</div>
+        ${rows.length === 0 ? '<div style="color:#bbb;font-size:.82rem;">No row data available — please save a new log.</div>' : `
+        <table style="border-collapse:collapse;width:100%;font-size:.78rem;">
+          <thead>
+            <tr style="background:#f8f9fc;">
+              <th style="border:1px solid #eee;padding:6px 10px;text-align:left;color:#1b3a6b;">Name</th>
+              <th style="border:1px solid #eee;padding:6px 10px;text-align:left;color:#e65100;">Activities</th>
+              <th style="border:1px solid #eee;padding:6px 10px;text-align:center;color:#2e7d32;">Attendance</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(row => `
+              <tr>
+                <td style="border:1px solid #eee;padding:6px 10px;font-weight:600;color:#333;">${row.name || '—'}</td>
+                <td style="border:1px solid #eee;padding:6px 10px;color:#555;">${(row.marked || []).filter(m => m !== 'Attendance').join(', ') || '—'}</td>
+                <td style="border:1px solid #eee;padding:6px 10px;text-align:center;">
+                  ${row.attended ? '<span style="color:#2e7d32;font-weight:800;">✓</span>' : '<span style="color:#bbb;">—</span>'}
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`}
+        <div style="margin-top:12px;text-align:right;">
+          <button onclick="event.stopPropagation();deleteLog(${i})" style="font-size:.75rem;color:#e53935;background:none;border:1px solid #ffcdd2;padding:4px 12px;border-radius:20px;cursor:pointer;">🗑 Delete this log</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function deleteLog(i) {
+  const logs = JSON.parse(localStorage.getItem('dailyLogs') || '[]');
+  logs.splice(i, 1);
+  localStorage.setItem('dailyLogs', JSON.stringify(logs));
+  renderSavedLogs();
+}
+
+function toggleSavedLog(id, header) {
+  const content = document.getElementById(id);
+  const idx = id.replace('savedlog-','');
+  const arrow = document.getElementById('savedlog-arrow-' + idx);
+  const isOpen = content.style.display !== 'none';
+  content.style.display = isOpen ? 'none' : 'block';
+  if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(90deg)';
 }
 </script>
 
@@ -3690,6 +3798,7 @@ function renderSavedLogs() {
     <button onclick="switchDashView('overview',this)" id="viewTab-overview" style="padding:10px 24px;border:none;background:none;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;color:#1b3a6b;border-bottom:3px solid #1b3a6b;margin-bottom:-2px;">📊 Overview</button>
     <button onclick="switchDashView('dailylog',this)" id="viewTab-dailylog" style="padding:10px 24px;border:none;background:none;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;color:#aaa;border-bottom:3px solid transparent;margin-bottom:-2px;">📋 Daily Log — Adult Care</button>
     <button onclick="switchDashView('youthlog',this)" id="viewTab-youthlog" style="padding:10px 24px;border:none;background:none;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;color:#aaa;border-bottom:3px solid transparent;margin-bottom:-2px;">📋 Daily Log — Weekly Youth</button>
+    <button onclick="switchDashView('savedlogs',this)" id="viewTab-savedlogs" style="padding:10px 24px;border:none;background:none;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;color:#aaa;border-bottom:3px solid transparent;margin-bottom:-2px;">🗂 Saved Logs</button>
     <button onclick="switchDashView('statistics',this)" id="viewTab-statistics" style="padding:10px 24px;border:none;background:none;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;color:#aaa;border-bottom:3px solid transparent;margin-bottom:-2px;">📈 Statistics</button>
   </div>
 
@@ -3758,7 +3867,7 @@ function renderSavedLogs() {
               <th colspan="6" style="border:1px solid #ddd;background:#fff3e0;padding:6px;text-align:center;font-weight:700;color:#e65100;">Activity</th>
               <th colspan="2" style="border:1px solid #ddd;background:#e3f2fd;padding:6px;text-align:center;font-weight:700;color:#1565c0;">Level</th>
               <th colspan="4" style="border:1px solid #ddd;background:#e8f5e9;padding:6px;text-align:center;font-weight:700;color:#2e7d32;">Prompt Level</th>
-              <th rowspan="2" style="border:1px solid #ddd;background:#f3e5f5;padding:7px 6px;text-align:center;font-weight:700;color:#6a1b9a;">Notes</th>
+              <th rowspan="2" style="border:1px solid #ddd;background:#f3e5f5;padding:7px 6px;text-align:center;font-weight:700;color:#6a1b9a;">Attendance</th>
             </tr>
             <tr>
               <th style="border:1px solid #ddd;background:#fff8f0;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Money Skill</th>
@@ -3777,12 +3886,6 @@ function renderSavedLogs() {
           </thead>
           <tbody id="dlBody"></tbody>
         </table>
-      </div>
-
-      <!-- Saved logs -->
-      <div style="margin-top:24px;">
-        <div style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:12px;">Saved Daily Logs</div>
-        <div id="savedLogs" style="display:flex;flex-direction:column;gap:8px;"></div>
       </div>
     </div>
   </div>
@@ -3842,11 +3945,41 @@ function renderSavedLogs() {
         </table>
       </div>
 
-      <!-- Saved logs -->
-      <div style="margin-top:24px;">
-        <div style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:12px;">Saved Youth Logs</div>
-        <div id="savedYouthLogs" style="display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+
+  <!-- SAVED LOGS VIEW -->
+  <div id="dashView-savedlogs" style="display:none;">
+    <div style="background:#fff;border-radius:18px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.06);">
+
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #eee;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:1.8rem;">🗂</span>
+          <div>
+            <div style="font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;">Program Tracker</div>
+            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;color:#1b3a6b;font-size:1.1rem;">Saved Daily Logs</div>
+          </div>
+        </div>
       </div>
+
+      <!-- Adult Care Logs -->
+      <div style="margin-bottom:28px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div style="background:#fff3e0;color:#e65100;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;padding:5px 16px;border-radius:20px;">🏠 Adult Care Program</div>
+          <div style="flex:1;height:2px;background:linear-gradient(90deg,#ffcc80,transparent);"></div>
+        </div>
+        <div id="savedLogs" style="display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+
+      <!-- Weekly Youth Logs -->
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div style="background:#e3f2fd;color:#1565c0;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;padding:5px 16px;border-radius:20px;">🎯 Weekly Youth Activities</div>
+          <div style="flex:1;height:2px;background:linear-gradient(90deg,#bbdefb,transparent);"></div>
+        </div>
+        <div id="savedYouthLogs" style="display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+
     </div>
   </div>
 
