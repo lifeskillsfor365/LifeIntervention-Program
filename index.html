@@ -3067,7 +3067,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
 
-      // Show staff name too
+      // Restore notes rows
+      document.getElementById('dlBody').querySelectorAll('input[data-notes-row]').forEach((inp, i) => {
+        inp.value = (existing.notes && existing.notes[i]) ? existing.notes[i] : '';
+      });
       if (existing.staff) document.getElementById('dl-staff').value = existing.staff;
     }
   });
@@ -3369,6 +3372,23 @@ function buildDailyLogTable() {
     // Name cell
     const td0 = document.createElement('td');
     td0.style.cssText = `${borderStyle};padding:0;position:sticky;left:0;z-index:1;background:#fff;`;
+
+    if (isLastRow) {
+      // Notes row — spans all columns
+      const notesLabel = document.createElement('input');
+      notesLabel.type = 'text';
+      notesLabel.placeholder = '📝 Notes…';
+      notesLabel.dataset.notesRow = r;
+      notesLabel.style.cssText = 'width:100%;border:none;padding:8px 10px;font-size:.8rem;outline:none;background:transparent;color:#6a1b9a;font-style:italic;';
+      td0.appendChild(notesLabel);
+      // Span all columns
+      td0.colSpan = DL_COLS + 2;
+      td0.style.cssText = 'border:none;padding:0;background:#fff;';
+      tr.appendChild(td0);
+      tbody.appendChild(tr);
+      continue;
+    }
+
     const inp = document.createElement('input');
     inp.type = 'text';
     inp.value = DL_NAMES[r] || '';
@@ -3416,9 +3436,11 @@ function clearDailyLog() {
   });
   // Restore pre-filled names instead of clearing them
   tbody.querySelectorAll('tr').forEach((tr, r) => {
-    const inp = tr.querySelector('input');
+    const inp = tr.querySelector('input:not([data-notes-row])');
     if (inp) inp.value = DL_NAMES[r] || '';
   });
+  // Clear notes rows
+  tbody.querySelectorAll('input[data-notes-row]').forEach(inp => inp.value = '');
 }
 function saveDailyLog() {
   const date  = document.getElementById('dl-date').value;
@@ -3451,14 +3473,19 @@ function saveDailyLog() {
     });
   });
 
-  if (rows.length === 0) { alert('No data to save — please add participant names first.'); return; }
+  const notes = [];
+  document.getElementById('dlBody').querySelectorAll('input[data-notes-row]').forEach(inp => {
+    if (inp.value.trim()) notes.push(inp.value.trim());
+  });
+
+  if (rows.length === 0 && notes.length === 0) { alert('No data to save — please enter names and mark some cells.'); return; }
 
   const savedLogs = JSON.parse(localStorage.getItem('dailyLogs') || '[]');
   const existingIdx = savedLogs.findIndex(l => l.date === date);
   if (existingIdx !== -1) {
-    savedLogs[existingIdx] = { date, staff, rows, savedAt: Date.now() };
+    savedLogs[existingIdx] = { date, staff, rows, notes, savedAt: Date.now() };
   } else {
-    savedLogs.unshift({ date, staff, rows, savedAt: Date.now() });
+    savedLogs.unshift({ date, staff, rows, notes, savedAt: Date.now() });
   }
   localStorage.setItem('dailyLogs', JSON.stringify(savedLogs));
   localStorage.setItem('dashData', JSON.stringify(dashData));
@@ -3511,6 +3538,11 @@ function renderSavedLogs() {
               </tr>`).join('')}
           </tbody>
         </table>`}
+        ${(log.notes && log.notes.length > 0) ? `
+        <div style="margin-top:12px;background:#faf5ff;border-radius:10px;padding:10px 14px;border-left:3px solid #6a1b9a;">
+          <div style="font-size:.72rem;font-weight:700;color:#6a1b9a;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">📝 Notes</div>
+          ${log.notes.map(n => `<div style="font-size:.82rem;color:#555;margin-bottom:4px;">• ${n}</div>`).join('')}
+        </div>` : ''}
         <div style="margin-top:12px;text-align:right;">
           <button onclick="event.stopPropagation();deleteLog(${i})" style="font-size:.75rem;color:#e53935;background:none;border:1px solid #ffcdd2;padding:4px 12px;border-radius:20px;cursor:pointer;">🗑 Delete this log</button>
         </div>
