@@ -2899,8 +2899,11 @@ function pinKey(k) {
         document.getElementById('staffPinModal').style.display = 'none';
         sessionStorage.setItem('staffAuth', '1');
         pinEntry = ''; updatePinDisplay();
+        dashData = JSON.parse(localStorage.getItem('dashData') || '[]');
         switchPage('dashboard');
         renderDashboard('all');
+        renderSavedLogs();
+        renderSavedYouthLogs();
       } else {
         document.getElementById('pinError').textContent = 'Incorrect PIN. Please try again.';
         [0,1,2,3].forEach(i => {
@@ -2940,6 +2943,7 @@ function dashTab(path, btn) {
 }
 
 function renderDashboard(path) {
+  dashData = JSON.parse(localStorage.getItem('dashData') || '[]');
   const data   = path==='all' ? dashData : dashData.filter(d=>d.path===path);
   const total  = data.length;
   const att    = data.filter(d=>d.attended==='yes').length;
@@ -3044,7 +3048,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (existing) {
       const activities = ['Money Skill','Community Shopping','Physical Fitness','Gardening','Basic Living Skill','Video-game'];
       const levels = ['Independent','Needs Prompts'];
-      const prompts = ['Gesture','Verbal','Visual','Physical'];
+      const prompts = ['Gesture','Verbal','Visual','Physical','Model'];
       const headers = [...activities, ...levels, ...prompts, 'Attendance'];
 
       existing.rows.forEach(row => {
@@ -3349,9 +3353,9 @@ function renderSavedYouthLogs() {
 }
 
 // ── DAILY LOG TABLE ──
-const DL_ROWS = 16;
-const DL_NAMES = ['Jacob','Lee','Drew','Bryan','Whitney','Daniel','Tariq','Olivia','Sydney','Erica','Dereck','Victoria','Zaraich','David','',''];
-const DL_COLS = 12;
+const DL_ROWS = 19;
+const DL_NAMES = ['Jacob','Lee','Drew','Bryan','Whitney','Daniel','Tariq','Olivia','Sydney','Erica','Dereck','Victoria','Zaraich','David','Tadj','','','',''];
+const DL_COLS = 13;
 
 function buildDailyLogTable() {
   const tbody = document.getElementById('dlBody');
@@ -3359,9 +3363,12 @@ function buildDailyLogTable() {
   tbody.innerHTML = '';
   for (let r = 0; r < DL_ROWS; r++) {
     const tr = document.createElement('tr');
+    const isLastRow = r >= DL_ROWS - 2;
+    const borderStyle = isLastRow ? 'border:none' : 'border:1px solid #ddd';
+
     // Name cell
     const td0 = document.createElement('td');
-    td0.style.cssText = 'border:1px solid #ddd;padding:0;';
+    td0.style.cssText = `${borderStyle};padding:0;position:sticky;left:0;z-index:1;background:#fff;`;
     const inp = document.createElement('input');
     inp.type = 'text';
     inp.value = DL_NAMES[r] || '';
@@ -3372,25 +3379,29 @@ function buildDailyLogTable() {
     for (let c = 0; c < DL_COLS; c++) {
       const td = document.createElement('td');
       td.dataset.tick = c;
-      td.style.cssText = 'border:1px solid #ddd;text-align:center;cursor:pointer;height:32px;font-weight:700;font-size:.85rem;color:#1565c0;transition:background .1s;';
-      td.addEventListener('click', function() {
-        this.textContent = this.textContent === 'X' ? '' : 'X';
-        this.style.background = this.textContent === 'X' ? '#e3f2fd' : '';
-      });
-      td.addEventListener('mouseover', function() { if (this.textContent !== 'X') this.style.background = '#f5f5f5'; });
-      td.addEventListener('mouseout', function() { if (this.textContent !== 'X') this.style.background = ''; });
+      td.style.cssText = `${borderStyle};text-align:center;${isLastRow ? '' : 'cursor:pointer;'}height:32px;font-weight:700;font-size:.85rem;color:#1565c0;transition:background .1s;`;
+      if (!isLastRow) {
+        td.addEventListener('click', function() {
+          this.textContent = this.textContent === 'X' ? '' : 'X';
+          this.style.background = this.textContent === 'X' ? '#e3f2fd' : '';
+        });
+        td.addEventListener('mouseover', function() { if (this.textContent !== 'X') this.style.background = '#f5f5f5'; });
+        td.addEventListener('mouseout', function() { if (this.textContent !== 'X') this.style.background = ''; });
+      }
       tr.appendChild(td);
     }
-    // Attendance cell (clickable X)
+    // Attendance cell
     const tdNotes = document.createElement('td');
-    tdNotes.dataset.tick = 12;
-    tdNotes.style.cssText = 'border:1px solid #ddd;text-align:center;cursor:pointer;height:32px;font-weight:700;font-size:.85rem;color:#6a1b9a;transition:background .1s;';
-    tdNotes.addEventListener('click', function() {
-      this.textContent = this.textContent === 'X' ? '' : 'X';
-      this.style.background = this.textContent === 'X' ? '#f3e5f5' : '';
-    });
-    tdNotes.addEventListener('mouseover', function() { if (this.textContent !== 'X') this.style.background = '#f5f5f5'; });
-    tdNotes.addEventListener('mouseout', function() { if (this.textContent !== 'X') this.style.background = ''; });
+    tdNotes.dataset.tick = 13;
+    tdNotes.style.cssText = `${borderStyle};text-align:center;${isLastRow ? '' : 'cursor:pointer;'}height:32px;font-weight:700;font-size:.85rem;color:#6a1b9a;transition:background .1s;`;
+    if (!isLastRow) {
+      tdNotes.addEventListener('click', function() {
+        this.textContent = this.textContent === 'X' ? '' : 'X';
+        this.style.background = this.textContent === 'X' ? '#f3e5f5' : '';
+      });
+      tdNotes.addEventListener('mouseover', function() { if (this.textContent !== 'X') this.style.background = '#f5f5f5'; });
+      tdNotes.addEventListener('mouseout', function() { if (this.textContent !== 'X') this.style.background = ''; });
+    }
     tr.appendChild(tdNotes);
     tbody.appendChild(tr);
   }
@@ -3416,7 +3427,7 @@ function saveDailyLog() {
 
   const activities = ['Money Skill','Community Shopping','Physical Fitness','Gardening','Basic Living Skill','Video-game'];
   const levels     = ['Independent','Needs Prompts'];
-  const prompts    = ['Gesture','Verbal','Visual','Physical'];
+  const prompts    = ['Gesture','Verbal','Visual','Physical','Model'];
   const headers    = [...activities, ...levels, ...prompts, 'Attendance'];
 
   const rows = [];
@@ -3425,7 +3436,7 @@ function saveDailyLog() {
     if (!name) return;
     const cells = [...tr.querySelectorAll('td[data-tick]')];
     const marked = cells.map((td,i) => td.textContent === 'X' ? headers[i] : null).filter(Boolean);
-    const attended = cells[12]?.textContent === 'X';
+    const attended = cells[13]?.textContent === 'X';
     rows.push({ name, marked, attended });
 
     // Push into dashData for metrics
@@ -3858,15 +3869,15 @@ function toggleSavedLog(id, header) {
             <col style="width:110px;">
             <col style="width:56px;"><col style="width:72px;"><col style="width:64px;"><col style="width:58px;"><col style="width:70px;"><col style="width:56px;">
             <col style="width:62px;"><col style="width:66px;">
-            <col style="width:52px;"><col style="width:50px;"><col style="width:50px;"><col style="width:56px;">
+            <col style="width:52px;"><col style="width:50px;"><col style="width:50px;"><col style="width:56px;"><col style="width:52px;">
             <col style="width:90px;">
           </colgroup>
           <thead>
             <tr>
-              <th rowspan="2" style="border:1px solid #ddd;background:#f8f9fc;padding:7px 10px;text-align:left;font-weight:700;color:#1b3a6b;">Name</th>
+              <th rowspan="2" style="border:1px solid #ddd;background:#f8f9fc;padding:7px 10px;text-align:left;font-weight:700;color:#1b3a6b;position:sticky;left:0;z-index:3;background:#f8f9fc;">Name</th>
               <th colspan="6" style="border:1px solid #ddd;background:#fff3e0;padding:6px;text-align:center;font-weight:700;color:#e65100;">Activity</th>
               <th colspan="2" style="border:1px solid #ddd;background:#e3f2fd;padding:6px;text-align:center;font-weight:700;color:#1565c0;">Level</th>
-              <th colspan="4" style="border:1px solid #ddd;background:#e8f5e9;padding:6px;text-align:center;font-weight:700;color:#2e7d32;">Prompt Level</th>
+              <th colspan="5" style="border:1px solid #ddd;background:#e8f5e9;padding:6px;text-align:center;font-weight:700;color:#2e7d32;">Prompt Level</th>
               <th rowspan="2" style="border:1px solid #ddd;background:#f3e5f5;padding:7px 6px;text-align:center;font-weight:700;color:#6a1b9a;">Attendance</th>
             </tr>
             <tr>
@@ -3882,6 +3893,7 @@ function toggleSavedLog(id, header) {
               <th style="border:1px solid #ddd;background:#f0f8f0;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Verbal</th>
               <th style="border:1px solid #ddd;background:#f0f8f0;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Visual</th>
               <th style="border:1px solid #ddd;background:#f0f8f0;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Physical</th>
+              <th style="border:1px solid #ddd;background:#f0f8f0;padding:5px 3px;font-weight:600;color:#555;font-size:.72rem;">Model</th>
             </tr>
           </thead>
           <tbody id="dlBody"></tbody>
